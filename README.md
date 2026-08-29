@@ -9,11 +9,37 @@ TicketOn의 취소·환불 문의에 정책 근거와 사용자별 예매 정보
 - Java 21
 - Spring Boot 4.1.1
 - Gradle
+- PostgreSQL 17
+- pgvector 0.8.6
+
+## 로컬 PostgreSQL·pgvector
+
+공식 pgvector 이미지를 고정 버전으로 사용하며 PostgreSQL 포트는 로컬 호스트에만 공개합니다.
+
+```bash
+docker compose up -d postgres
+docker compose ps
+```
+
+Vector Extension 확인:
+
+```bash
+docker compose exec postgres psql -U ticketon_ai -d ticketon_ai -c "SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';"
+```
+
+종료:
+
+```bash
+docker compose stop postgres
+```
+
+로컬 비밀번호는 Git에서 제외되는 `.env`에만 저장하며, 저장소에는 `.env.example`만 포함합니다.
 
 ## 진행 상태
 
 - [x] 별도 Spring Boot 서비스 구성
 - [x] Java 21 기본 실행 및 테스트
+- [x] PostgreSQL·pgvector 로컬 인프라 구성
 - [ ] Ollama Chat·Embedding Model 연동
 - [ ] PostgreSQL·pgvector 기반 정책 검색
 - [ ] 평가셋 기반 RAG 품질 측정
