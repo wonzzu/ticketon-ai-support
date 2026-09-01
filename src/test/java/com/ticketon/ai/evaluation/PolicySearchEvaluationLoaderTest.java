@@ -13,10 +13,10 @@ class PolicySearchEvaluationLoaderTest {
             new PolicySearchEvaluationLoader(new ObjectMapper(), "development");
 
     @Test
-    void 개발용_평가_JSON에서_마흔한_개의_문항을_읽는다() {
+    void 개발용_평가_JSON에서_쉰한_개의_문항을_읽는다() {
         List<PolicySearchEvaluationCase> evaluationCases = loader.load();
 
-        assertThat(evaluationCases).hasSize(41);
+        assertThat(evaluationCases).hasSize(51);
     }
 
     @Test
@@ -62,18 +62,21 @@ class PolicySearchEvaluationLoaderTest {
     }
 
     @Test
-    void 현실형_개발_평가_JSON에서_스물네_개의_문항을_읽는다() {
-        PolicySearchEvaluationLoader realisticLoader =
-                new PolicySearchEvaluationLoader(new ObjectMapper(), "realistic-development");
+    void 어려운_개발_평가_JSON에서_아흔네_개의_문항을_읽는다() {
+        PolicySearchEvaluationLoader challengingLoader =
+                new PolicySearchEvaluationLoader(
+                        new ObjectMapper(),
+                        "challenging-development"
+                );
 
-        List<PolicySearchEvaluationCase> evaluationCases = realisticLoader.load();
+        List<PolicySearchEvaluationCase> evaluationCases = challengingLoader.load();
 
-        assertThat(evaluationCases).hasSize(24);
+        assertThat(evaluationCases).hasSize(94);
         assertThat(evaluationCases)
                 .extracting(PolicySearchEvaluationCase::id)
                 .doesNotHaveDuplicates();
         assertThat(evaluationCases)
                 .extracting(PolicySearchEvaluationCase::expectedPolicyIds)
-                .allSatisfy(policyIds -> assertThat(policyIds).hasSize(1));
+                .allSatisfy(policyIds -> assertThat(policyIds).isNotEmpty());
     }
 }

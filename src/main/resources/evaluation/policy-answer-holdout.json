@@ -67,7 +67,7 @@
     "category": "BOUNDARY",
     "question": "공연까지 정확히 9일 남았을 때 취소하면 수수료는 몇 퍼센트예요?",
     "expectedPolicyIds": ["REFUND-02"],
-    "mustIncludeFacts": ["공연일까지 7일 이상 9일 이하 남으면 결제금액의 10% 수수료가 적용된다", "정확히 9일은 10% 구간이다"],
+    "mustIncludeFacts": ["공연일까지 7일 이상 13일 이하 남으면 결제금액의 10% 수수료가 적용된다", "정확히 9일은 10% 구간이다"],
     "mustNotIncludeFacts": ["정확히 9일 남으면 수수료가 없다", "정확히 9일 남으면 20% 수수료다"],
     "shouldAbstain": false
   },
