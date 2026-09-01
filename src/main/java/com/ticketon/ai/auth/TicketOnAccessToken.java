@@ -4,9 +4,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 public record TicketOnAccessToken(String value) {
 
     private static final String BEARER_PREFIX = "Bearer ";
+
+    public static Optional<TicketOnAccessToken> fromOptional(
+            String authorizationHeader
+    ) {
+        if (!StringUtils.hasText(authorizationHeader)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(from(authorizationHeader));
+    }
 
     public static TicketOnAccessToken from(String authorizationHeader) {
         if (!StringUtils.hasText(authorizationHeader)

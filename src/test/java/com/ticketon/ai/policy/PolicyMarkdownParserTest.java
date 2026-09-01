@@ -15,7 +15,7 @@ class PolicyMarkdownParserTest {
     private final PolicyMarkdownParser parser = new PolicyMarkdownParser();
 
     @Test
-    void 정책_마크다운_세_개를_스물네_개_조항으로_분리한다() throws IOException {
+    void 정책_마크다운을_백육십육_개의_고유_Chunk로_분리한다() throws IOException {
         List<PolicyChunk> chunks;
 
         try (var paths = Files.list(Path.of("policies"))) {
@@ -26,9 +26,10 @@ class PolicyMarkdownParserTest {
                     .toList();
         }
 
-        assertThat(chunks).hasSize(24);
-        assertThat(chunks).extracting(PolicyChunk::policyId).doesNotHaveDuplicates();
+        assertThat(chunks).hasSize(166);
+        assertThat(chunks).extracting(PolicyChunk::chunkId).doesNotHaveDuplicates();
         assertThat(chunks).allSatisfy(chunk -> {
+            assertThat(chunk.chunkId()).isNotBlank();
             assertThat(chunk.policyId()).isNotBlank();
             assertThat(chunk.domain()).isNotBlank();
             assertThat(chunk.title()).isNotBlank();

@@ -200,10 +200,10 @@
   {
     "id": "GEN-DEV-023",
     "category": "BOUNDARY",
-    "question": "공연이 정확히 10일 남았을 때 취소하면 수수료가 붙나요?",
+    "question": "공연이 정확히 14일 남았을 때 취소하면 수수료가 붙나요?",
     "expectedPolicyIds": ["REFUND-02"],
-    "mustIncludeFacts": ["공연일까지 10일 이상 남으면 취소 수수료가 없다", "정확히 10일 남은 경우 수수료가 없다"],
-    "mustNotIncludeFacts": ["정확히 10일 남으면 10% 수수료가 부과된다"],
+    "mustIncludeFacts": ["공연일까지 14일 이상 남으면 취소 수수료가 없다", "정확히 14일 남은 경우 수수료가 없다"],
+    "mustNotIncludeFacts": ["정확히 14일 남으면 10% 수수료가 부과된다"],
     "shouldAbstain": false
   },
   {

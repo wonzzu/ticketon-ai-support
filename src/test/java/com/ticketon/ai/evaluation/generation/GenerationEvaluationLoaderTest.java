@@ -28,10 +28,10 @@ class GenerationEvaluationLoaderTest {
 
         List<GenerationEvaluationCase> evaluationCases = loader.load();
 
-        assertThat(countCategory(evaluationCases, "SINGLE_POLICY")).isEqualTo(8);
+        assertThat(countCategory(evaluationCases, "SINGLE_POLICY")).isEqualTo(9);
         assertThat(countCategory(evaluationCases, "MULTI_POLICY")).isEqualTo(10);
         assertThat(countCategory(evaluationCases, "BOUNDARY")).isEqualTo(8);
-        assertThat(countCategory(evaluationCases, "UNANSWERABLE")).isEqualTo(8);
+        assertThat(countCategory(evaluationCases, "UNANSWERABLE")).isEqualTo(7);
         assertThat(countCategory(evaluationCases, "POLICY_CONFUSION")).isEqualTo(6);
     }
 
