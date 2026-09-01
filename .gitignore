@@ -44,3 +44,9 @@ application-local.properties
 application-local.yml
 application-*.local.properties
 application-*.local.yml
+
+# Local Codex instructions
+/AGENTS.md
+
+# Local AI evaluation outputs
+/evaluation-results/

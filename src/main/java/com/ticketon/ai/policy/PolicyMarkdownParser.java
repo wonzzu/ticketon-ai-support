@@ -16,7 +16,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class PolicyMarkdownParser {
 
-    private static final Pattern POLICY_HEADING = Pattern.compile("^## ([A-Z]+-\\d{2}) (.+)$");
+    private static final Pattern CHUNK_HEADING = Pattern.compile(
+            "^## ([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+) (.+)$"
+    );
+    private static final List<String> SECTION_METADATA_KEYS = List.of(
+            "sourcePolicyId",
+            "documentType",
+            "audience",
+            "implementationStatus",
+            "domain"
+    );
 
     public List<PolicyChunk> parse(Path path) {
         try {
@@ -29,46 +38,70 @@ public class PolicyMarkdownParser {
     private List<PolicyChunk> parseLines(List<String> lines) {
         List<PolicyChunk> chunks = new ArrayList<>();
         Map<String, String> metadata = parseMetadata(lines);
-        String policyId = null;
+        String chunkId = null;
         String title = null;
         StringBuilder content = new StringBuilder();
+        Map<String, String> sectionMetadata = new HashMap<>();
 
         for (String line : lines) {
-            Matcher matcher = POLICY_HEADING.matcher(line);
+            Matcher matcher = CHUNK_HEADING.matcher(line);
             if (matcher.matches()) {
-                if (policyId != null) {
-                    chunks.add(createChunk(policyId, title, content, metadata));
+                if (chunkId != null) {
+                    chunks.add(createChunk(chunkId, title, content, metadata, sectionMetadata));
                 }
-                policyId = matcher.group(1);
+                chunkId = matcher.group(1);
                 title = matcher.group(2);
                 content = new StringBuilder();
-            } else if (policyId != null) {
+                sectionMetadata = new HashMap<>();
+            } else if (chunkId != null && isSectionMetadata(line)) {
+                String[] entry = line.split(":", 2);
+                sectionMetadata.put(entry[0].trim(), removeQuotes(entry[1].trim()));
+            } else if (chunkId != null) {
                 content.append(line).append(System.lineSeparator());
             }
         }
 
-        if (policyId != null) {
-            chunks.add(createChunk(policyId, title, content, metadata));
+        if (chunkId != null) {
+            chunks.add(createChunk(chunkId, title, content, metadata, sectionMetadata));
         }
 
         return chunks;
     }
 
     private PolicyChunk createChunk(
-            String policyId,
+            String chunkId,
             String title,
             StringBuilder content,
-            Map<String, String> metadata
+            Map<String, String> metadata,
+            Map<String, String> sectionMetadata
     ) {
         return new PolicyChunk(
-                policyId,
-                metadata.get("domain"),
+                chunkId,
+                sectionMetadata.getOrDefault("sourcePolicyId", chunkId),
+                sectionMetadata.getOrDefault(
+                        "documentType",
+                        metadata.getOrDefault("documentType", "POLICY")
+                ),
+                sectionMetadata.getOrDefault(
+                        "audience",
+                        metadata.getOrDefault("audience", "CUSTOMER")
+                ),
+                sectionMetadata.getOrDefault(
+                        "implementationStatus",
+                        metadata.getOrDefault("implementationStatus", "IMPLEMENTED")
+                ),
+                sectionMetadata.getOrDefault("domain", metadata.get("domain")),
                 title,
                 content.toString().trim(),
                 metadata.get("version"),
                 LocalDate.parse(metadata.get("effectiveFrom")),
                 metadata.get("status")
         );
+    }
+
+    private boolean isSectionMetadata(String line) {
+        return SECTION_METADATA_KEYS.stream()
+                .anyMatch(key -> line.startsWith(key + ":"));
     }
 
     private Map<String, String> parseMetadata(List<String> lines) {

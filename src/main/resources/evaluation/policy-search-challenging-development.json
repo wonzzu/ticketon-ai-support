@@ -1,0 +1,762 @@
+[
+  {
+    "id": "REAL-001",
+    "category": "COLLOQUIAL",
+    "question": "낮 공연 줄 다 섰는데 이 번호로 저녁 공연도 들어가면 됨?",
+    "expectedPolicyIds": [
+      "QUEUE-01"
+    ]
+  },
+  {
+    "id": "REAL-002",
+    "category": "IMPLICIT",
+    "question": "친구랑 예매 버튼을 거의 같이 눌렀는데 왜 저만 훨씬 뒤예요?",
+    "expectedPolicyIds": [
+      "QUEUE-02"
+    ]
+  },
+  {
+    "id": "REAL-003",
+    "category": "COLLOQUIAL",
+    "question": "이거 계속 켜두면 차례 왔을 때 알아서 자리 고르는 데로 넘어가요?",
+    "expectedPolicyIds": [
+      "QUEUE-03"
+    ]
+  },
+  {
+    "id": "REAL-004",
+    "category": "IMPLICIT",
+    "question": "줄은 다 뚫었는데 전화 좀 하고 15분 뒤에 표 골라도 돼요?",
+    "expectedPolicyIds": [
+      "QUEUE-04"
+    ]
+  },
+  {
+    "id": "REAL-005",
+    "category": "WRONG_ASSUMPTION",
+    "question": "순번 너무 뒤인데 새로고침 계속하면 새 번호로 다시 뽑히죠?",
+    "expectedPolicyIds": [
+      "QUEUE-05"
+    ]
+  },
+  {
+    "id": "REAL-006",
+    "category": "IMPLICIT",
+    "question": "자리 체크해두고 결제하려는데 벌써 다른 사람이 가져갔다고 떠요. 이게 가능해요?",
+    "expectedPolicyIds": [
+      "SEAT-01"
+    ]
+  },
+  {
+    "id": "REAL-007",
+    "category": "COLLOQUIAL",
+    "question": "자리 잡혔다고 뜬 다음에 카톡 좀 하다가 결제해도 안 풀림?",
+    "expectedPolicyIds": [
+      "SEAT-02"
+    ]
+  },
+  {
+    "id": "REAL-008",
+    "category": "IMPLICIT",
+    "question": "내가 먼저 눌렀는데 친구만 그 자리 잡히고 나는 실패했어요. 왜 이래요?",
+    "expectedPolicyIds": [
+      "SEAT-03"
+    ]
+  },
+  {
+    "id": "REAL-009",
+    "category": "NOISY",
+    "question": "결제창 오래 켜놨더니 자리 없어짐 다시 첨부터 해야댐?",
+    "expectedPolicyIds": [
+      "SEAT-04"
+    ]
+  },
+  {
+    "id": "REAL-010",
+    "category": "IMPLICIT",
+    "question": "예약됐다는 화면은 봤는데 카드에서 돈은 안 나갔어요. 표 산 거 맞나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-01"
+    ]
+  },
+  {
+    "id": "REAL-011",
+    "category": "COLLOQUIAL",
+    "question": "가족 넷이 붙어 앉으려는데 한 번에 네 자리 못 잡아요?",
+    "expectedPolicyIds": [
+      "RESERVATION-02"
+    ]
+  },
+  {
+    "id": "REAL-012",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연 시작한 지 5분밖에 안 됐고 빈자리도 보이는데 지금 사도 되죠?",
+    "expectedPolicyIds": [
+      "RESERVATION-03"
+    ]
+  },
+  {
+    "id": "REAL-013",
+    "category": "COLLOQUIAL",
+    "question": "토요일 표 샀는데 일요일 걸로 그냥 바꿔주면 안 돼요?",
+    "expectedPolicyIds": [
+      "RESERVATION-04"
+    ]
+  },
+  {
+    "id": "REAL-014",
+    "category": "NOISY",
+    "question": "카드 오류나서 결제안됨 자리 아직 떠있는데 다시 눌러도됨?",
+    "expectedPolicyIds": [
+      "PAYMENT-01"
+    ]
+  },
+  {
+    "id": "REAL-015",
+    "category": "WRONG_ASSUMPTION",
+    "question": "결제 버튼 두 번 눌렀는데 돈도 두 번 빠지는 거 아니에요?",
+    "expectedPolicyIds": [
+      "PAYMENT-02"
+    ]
+  },
+  {
+    "id": "REAL-016",
+    "category": "IMPLICIT",
+    "question": "오늘 저녁 공연인데 아침에 갑자기 못 가게 됐어요. 취소할 수 있어요?",
+    "expectedPolicyIds": [
+      "REFUND-01"
+    ]
+  },
+  {
+    "id": "REAL-017",
+    "category": "COLLOQUIAL",
+    "question": "공연 8일 남았는데 지금 취소하면 얼마 떼가요?",
+    "expectedPolicyIds": [
+      "REFUND-02"
+    ]
+  },
+  {
+    "id": "REAL-018",
+    "category": "BOUNDARY",
+    "question": "어젯밤에 샀고 공연은 사흘 뒤인데 지금 취소하면 수수료 붙나요?",
+    "expectedPolicyIds": [
+      "REFUND-03"
+    ]
+  },
+  {
+    "id": "REAL-019",
+    "category": "IMPLICIT",
+    "question": "쿠폰 먹여서 실제로 8만원 냈는데 취소비는 원래 가격으로 계산해요?",
+    "expectedPolicyIds": [
+      "REFUND-04"
+    ]
+  },
+  {
+    "id": "REAL-020",
+    "category": "COLLOQUIAL",
+    "question": "주최 쪽에서 공연을 아예 엎었는데 저도 취소비 내야 함?",
+    "expectedPolicyIds": [
+      "REFUND-05"
+    ]
+  },
+  {
+    "id": "REAL-021",
+    "category": "IMPLICIT",
+    "question": "공연장이 갑자기 다른 데로 바뀌어서 못 가요. 그냥 취소해도 돈 안 떼나요?",
+    "expectedPolicyIds": [
+      "REFUND-06"
+    ]
+  },
+  {
+    "id": "REAL-022",
+    "category": "COLLOQUIAL",
+    "question": "금요일에 취소됐다고 떴는데 주말 지나면 카드 돈 언제 돌아와요?",
+    "expectedPolicyIds": [
+      "REFUND-07"
+    ]
+  },
+  {
+    "id": "REAL-023",
+    "category": "NOISY",
+    "question": "3자리 샀는데 친구한명 못간대 걔꺼 하나만 빼는거 ㄱㄴ?",
+    "expectedPolicyIds": [
+      "REFUND-08"
+    ]
+  },
+  {
+    "id": "REAL-024",
+    "category": "IMPLICIT",
+    "question": "실수로 취소 완료까지 눌렀어요. 아까 그 자리로 다시 살려주세요.",
+    "expectedPolicyIds": [
+      "REFUND-09"
+    ]
+  },
+  {
+    "id": "EXP-002",
+    "category": "IMPLICIT",
+    "question": "쓰다가 갑자기 로그인 화면으로 튕겼는데 세션이 끝난 건가요?",
+    "expectedPolicyIds": [
+      "AUTH-02"
+    ]
+  },
+  {
+    "id": "EXP-003",
+    "category": "POLICY_CONFUSION",
+    "question": "로그인은 되어 있는데 판매자 공연 등록 화면만 막혀요.",
+    "expectedPolicyIds": [
+      "AUTH-07"
+    ]
+  },
+  {
+    "id": "EXP-004",
+    "category": "WRONG_ASSUMPTION",
+    "question": "로그아웃해도 전에 받은 갱신 토큰으로 계속 로그인 연장할 수 있죠?",
+    "expectedPolicyIds": [
+      "AUTH-04"
+    ]
+  },
+  {
+    "id": "EXP-005",
+    "category": "COLLOQUIAL",
+    "question": "버튼 몇 번 빨리 눌렀더니 요청 너무 많다는데 언제 다시 해요?",
+    "expectedPolicyIds": [
+      "AUTH-10"
+    ]
+  },
+  {
+    "id": "EXP-007",
+    "category": "IMPLICIT",
+    "question": "가입하려는데 이 메일은 이미 쓰고 있다고 나와요.",
+    "expectedPolicyIds": [
+      "MEMBER-03"
+    ]
+  },
+  {
+    "id": "EXP-008",
+    "category": "COLLOQUIAL",
+    "question": "닉 바꾸려는데 누가 쓰는 중이라 안 된다는데 다른 걸로 해야 됨?",
+    "expectedPolicyIds": [
+      "MEMBER-04"
+    ]
+  },
+  {
+    "id": "EXP-009",
+    "category": "WRONG_ASSUMPTION",
+    "question": "회원 탈퇴하고도 원래 아이디로 다시 로그인할 수 있는 거죠?",
+    "expectedPolicyIds": [
+      "MEMBER-08"
+    ]
+  },
+  {
+    "id": "EXP-010",
+    "category": "POLICY_CONFUSION",
+    "question": "계정이 정지됐다는 것과 탈퇴됐다는 건 똑같이 영원히 못 쓰는 상태인가요?",
+    "expectedPolicyIds": [
+      "MEMBER-09",
+      "MEMBER-10"
+    ]
+  },
+  {
+    "id": "EXP-012",
+    "category": "NOISY",
+    "question": "공연 이름 일부만 쳐도 검색됨?",
+    "expectedPolicyIds": [
+      "EVENT-02"
+    ]
+  },
+  {
+    "id": "EXP-013",
+    "category": "IMPLICIT",
+    "question": "판매자가 공연을 올렸다는데 검색해도 아무 데도 안 보여요.",
+    "expectedPolicyIds": [
+      "EVENT-09",
+      "EVENT-10"
+    ]
+  },
+  {
+    "id": "EXP-014",
+    "category": "WRONG_ASSUMPTION",
+    "question": "검수에서 반려된 공연도 고객 목록에는 일단 공개되는 거죠?",
+    "expectedPolicyIds": [
+      "EVENT-11"
+    ]
+  },
+  {
+    "id": "EXP-015",
+    "category": "COLLOQUIAL",
+    "question": "끝난 공연 기록은 어디 가서 봐요?",
+    "expectedPolicyIds": [
+      "EVENT-13"
+    ]
+  },
+  {
+    "id": "EXP-016",
+    "category": "POLICY_CONFUSION",
+    "question": "12세 관람가 공연이면 열두 살이 안 된 아이도 혼자 들어갈 수 있나요?",
+    "expectedPolicyIds": [
+      "EVENT-06"
+    ]
+  },
+  {
+    "id": "EXP-017",
+    "category": "IMPLICIT",
+    "question": "예매하기 전에 러닝타임이랑 출연진, 관람 나이를 어디서 확인해요?",
+    "expectedPolicyIds": [
+      "EVENT-04"
+    ]
+  },
+  {
+    "id": "EXP-019",
+    "category": "POLICY_CONFUSION",
+    "question": "공연장이 같으면 그 장소에서 하는 공연들도 전부 같은 공연인 건가요?",
+    "expectedPolicyIds": [
+      "VENUE-01"
+    ]
+  },
+  {
+    "id": "EXP-020",
+    "category": "IMPLICIT",
+    "question": "같은 공연인데 토요일 표랑 일요일 표의 장소가 달라 보여요.",
+    "expectedPolicyIds": [
+      "VENUE-04"
+    ]
+  },
+  {
+    "id": "EXP-021",
+    "category": "WRONG_ASSUMPTION",
+    "question": "VIP, R, S, A석은 이름만 다르고 가격은 항상 같은 거죠?",
+    "expectedPolicyIds": [
+      "VENUE-03",
+      "VENUE-06"
+    ]
+  },
+  {
+    "id": "EXP-022",
+    "category": "COLLOQUIAL",
+    "question": "어제 본 1열 3번이 오늘 회차에서는 더 비싼데 왜 그래요?",
+    "expectedPolicyIds": [
+      "VENUE-06"
+    ]
+  },
+  {
+    "id": "EXP-023",
+    "category": "NOISY",
+    "question": "고른 자리 없다뜸 좌석표 다시 봐야함?",
+    "expectedPolicyIds": [
+      "VENUE-08"
+    ]
+  },
+  {
+    "id": "EXP-024",
+    "category": "IMPLICIT",
+    "question": "친구랑 동시에 들어갔는데 친구 순번이 더 앞이에요.",
+    "expectedPolicyIds": [
+      "QUEUE-02"
+    ]
+  },
+  {
+    "id": "EXP-025",
+    "category": "POLICY_CONFUSION",
+    "question": "줄 통과한 뒤 9분 지났는데 좌석을 잡으면 선점 시간도 1분만 남나요?",
+    "expectedPolicyIds": [
+      "QUEUE-04",
+      "SEAT-02"
+    ]
+  },
+  {
+    "id": "EXP-026",
+    "category": "WRONG_ASSUMPTION",
+    "question": "대기 화면을 닫았다 다시 열면 더 빠른 새 번호를 받을 수도 있죠?",
+    "expectedPolicyIds": [
+      "QUEUE-05"
+    ]
+  },
+  {
+    "id": "EXP-027",
+    "category": "NOISY",
+    "question": "줄 다됐는데 딴짓하다 늦음 다시 줄서야됨?",
+    "expectedPolicyIds": [
+      "QUEUE-04"
+    ]
+  },
+  {
+    "id": "EXP-028",
+    "category": "IMPLICIT",
+    "question": "좌석에 체크만 해놓고 고민하는 사이 다른 사람이 가져갔어요.",
+    "expectedPolicyIds": [
+      "SEAT-01"
+    ]
+  },
+  {
+    "id": "EXP-029",
+    "category": "BOUNDARY",
+    "question": "예매 요청 성공 후 정확히 7분이 지나면 그 좌석은 어떻게 되나요?",
+    "expectedPolicyIds": [
+      "SEAT-02",
+      "SEAT-04"
+    ]
+  },
+  {
+    "id": "EXP-030",
+    "category": "WRONG_ASSUMPTION",
+    "question": "두 명이 같은 좌석 예매를 동시에 성공해서 표가 겹칠 수도 있나요?",
+    "expectedPolicyIds": [
+      "SEAT-03"
+    ]
+  },
+  {
+    "id": "EXP-031",
+    "category": "POLICY_CONFUSION",
+    "question": "결제창까지 갔다는 건 좌석이 영구적으로 제 것이 됐다는 뜻인가요?",
+    "expectedPolicyIds": [
+      "RESERVATION-01",
+      "SEAT-02"
+    ]
+  },
+  {
+    "id": "EXP-032",
+    "category": "IMPLICIT",
+    "question": "아무 자리도 안 고르고 다음 단계로 넘어가려니까 막혀요.",
+    "expectedPolicyIds": [
+      "RESERVATION-05"
+    ]
+  },
+  {
+    "id": "EXP-033",
+    "category": "WRONG_ASSUMPTION",
+    "question": "다른 날짜 회차의 빈 좌석을 지금 고른 회차 예매에 섞어도 되죠?",
+    "expectedPolicyIds": [
+      "RESERVATION-06"
+    ]
+  },
+  {
+    "id": "EXP-034",
+    "category": "COLLOQUIAL",
+    "question": "예매 버튼 두 번 눌렀는데 예약도 두 건 생기는 거 아님?",
+    "expectedPolicyIds": [
+      "RESERVATION-01"
+    ]
+  },
+  {
+    "id": "EXP-035",
+    "category": "IMPLICIT",
+    "question": "내 예매에 결제 대기라고 써 있는데 표를 산 건가요?",
+    "expectedPolicyIds": [
+      "RESERVATION-01"
+    ]
+  },
+  {
+    "id": "EXP-036",
+    "category": "POLICY_CONFUSION",
+    "question": "친구 계정으로 산 표를 제 로그인으로 조회해서 취소할 수 있나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-07"
+    ]
+  },
+  {
+    "id": "EXP-037",
+    "category": "NOISY",
+    "question": "카드튕김 근데 자리시간 남음 같은거 다시결제 ㄱㄴ?",
+    "expectedPolicyIds": [
+      "PAYMENT-01"
+    ]
+  },
+  {
+    "id": "EXP-038",
+    "category": "WRONG_ASSUMPTION",
+    "question": "결제 완료된 좌석도 아직 선택 가능 상태로 남아 있나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-01"
+    ]
+  },
+  {
+    "id": "EXP-039",
+    "category": "IMPLICIT",
+    "question": "취소 버튼을 눌렀더니 사유를 더 자세히 적으라고 해요.",
+    "expectedPolicyIds": [
+      "REFUND-08"
+    ]
+  },
+  {
+    "id": "EXP-040",
+    "category": "COMPOSITE",
+    "question": "예매를 전부 취소하면 결제도 취소되고 잡았던 좌석도 다시 풀리나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-08"
+    ]
+  },
+  {
+    "id": "EXP-041",
+    "category": "BOUNDARY",
+    "question": "공연이 정확히 9일 남았을 때 취소하면 수수료율이 어떻게 돼요?",
+    "expectedPolicyIds": [
+      "REFUND-02"
+    ]
+  },
+  {
+    "id": "EXP-042",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연 장소만 바뀌어도 기존 좌석은 무조건 사라지고 다시 예매해야 하나요?",
+    "expectedPolicyIds": [
+      "REFUND-06"
+    ]
+  },
+  {
+    "id": "EXP-044",
+    "category": "COLLOQUIAL",
+    "question": "쿠폰 받기 눌렀더니 다 나갔다는데 이제 못 받는 거예요?",
+    "expectedPolicyIds": [
+      "COUPON-04"
+    ]
+  },
+  {
+    "id": "EXP-045",
+    "category": "WRONG_ASSUMPTION",
+    "question": "같은 선착순 쿠폰을 여러 번 눌러서 두 장 받을 수도 있죠?",
+    "expectedPolicyIds": [
+      "COUPON-03"
+    ]
+  },
+  {
+    "id": "EXP-046",
+    "category": "POLICY_CONFUSION",
+    "question": "10퍼센트 할인 쿠폰이랑 만 원 할인 쿠폰은 계산 방식이 같은가요?",
+    "expectedPolicyIds": [
+      "COUPON-06"
+    ]
+  },
+  {
+    "id": "EXP-047",
+    "category": "IMPLICIT",
+    "question": "쿠폰은 받아놨는데 결제 화면에서 적용하는 곳이 안 보여요.",
+    "expectedPolicyIds": [
+      "COUPON-08"
+    ]
+  },
+  {
+    "id": "EXP-048",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연을 예매하지 않았어도 관람 후기는 쓸 수 있는 거죠?",
+    "expectedPolicyIds": [
+      "REVIEW-01"
+    ]
+  },
+  {
+    "id": "EXP-049",
+    "category": "COLLOQUIAL",
+    "question": "같은 공연 후기 하나 더 쓰려는데 왜 막힘?",
+    "expectedPolicyIds": [
+      "REVIEW-02"
+    ]
+  },
+  {
+    "id": "EXP-050",
+    "category": "BOUNDARY",
+    "question": "후기에 별점 0점이나 6점을 줄 수 있나요?",
+    "expectedPolicyIds": [
+      "REVIEW-03"
+    ]
+  },
+  {
+    "id": "EXP-051",
+    "category": "BOUNDARY",
+    "question": "후기 내용을 1001자로 작성해도 등록되나요?",
+    "expectedPolicyIds": [
+      "REVIEW-04"
+    ]
+  },
+  {
+    "id": "EXP-052",
+    "category": "POLICY_CONFUSION",
+    "question": "마음에 안 드는 다른 사람 후기를 제가 삭제할 수도 있나요?",
+    "expectedPolicyIds": [
+      "REVIEW-07"
+    ]
+  },
+  {
+    "id": "EXP-054",
+    "category": "BOUNDARY",
+    "question": "공연 종료일을 시작일보다 앞선 날짜로 등록할 수 있나요?",
+    "expectedPolicyIds": [
+      "SELLER-02"
+    ]
+  },
+  {
+    "id": "EXP-055",
+    "category": "IMPLICIT",
+    "question": "공연을 새로 올렸는데 바로 고객들에게 공개되지 않아요.",
+    "expectedPolicyIds": [
+      "EVENT-09"
+    ]
+  },
+  {
+    "id": "EXP-056",
+    "category": "WRONG_ASSUMPTION",
+    "question": "다른 판매자가 올린 공연도 제가 내용을 고쳐줄 수 있죠?",
+    "expectedPolicyIds": [
+      "SELLER-07"
+    ]
+  },
+  {
+    "id": "EXP-057",
+    "category": "COLLOQUIAL",
+    "question": "검수에서 빠꾸 먹은 이유 어디서 봄?",
+    "expectedPolicyIds": [
+      "EVENT-11"
+    ]
+  },
+  {
+    "id": "EXP-058",
+    "category": "IMPLICIT",
+    "question": "공연은 만들었는데 날짜와 시간을 여러 개 추가하고 싶어요.",
+    "expectedPolicyIds": [
+      "SELLER-09"
+    ]
+  },
+  {
+    "id": "EXP-059",
+    "category": "WRONG_ASSUMPTION",
+    "question": "좌석 가격은 VIP만 넣고 나머지 등급은 비워도 공연 등록되나요?",
+    "expectedPolicyIds": [
+      "SELLER-10"
+    ]
+  },
+  {
+    "id": "EXP-060",
+    "category": "BOUNDARY",
+    "question": "공연 포스터로 5MB가 넘는 사진도 올릴 수 있나요?",
+    "expectedPolicyIds": [
+      "SELLER-11"
+    ]
+  },
+  {
+    "id": "EXP-061",
+    "category": "POLICY_CONFUSION",
+    "question": "공연을 승인해서 게시하는 것도 판매자가 직접 하는 건가요?",
+    "expectedPolicyIds": [
+      "EVENT-10"
+    ]
+  },
+  {
+    "id": "EXP-062",
+    "category": "NOISY",
+    "question": "포스터 업로드 실패함 파일 뭐 확인해야됨?",
+    "expectedPolicyIds": [
+      "SELLER-11"
+    ]
+  },
+  {
+    "id": "EXP-064",
+    "category": "POLICY_CONFUSION",
+    "question": "총 결제액이 그대로 최종 정산액으로 입금되는 건가요?",
+    "expectedPolicyIds": [
+      "SETTLEMENT-02"
+    ]
+  },
+  {
+    "id": "EXP-065",
+    "category": "IMPLICIT",
+    "question": "정산 목록에서 공연 이름 대신 삭제된 공연이라고 떠요.",
+    "expectedPolicyIds": [
+      "SETTLEMENT-06"
+    ]
+  },
+  {
+    "id": "EXP-066",
+    "category": "WRONG_ASSUMPTION",
+    "question": "판매자 계정이면 다른 판매자의 정산 명세도 조회할 수 있죠?",
+    "expectedPolicyIds": [
+      "SETTLEMENT-07"
+    ]
+  },
+  {
+    "id": "EXP-067",
+    "category": "COMPOSITE",
+    "question": "고객 결제가 취소되면 이미 계산된 판매자 정산에도 반영되나요?",
+    "expectedPolicyIds": [
+      "SETTLEMENT-08"
+    ]
+  },
+  {
+    "id": "EXP-069",
+    "category": "IMPLICIT",
+    "question": "관리자에게 아직 승인받지 못한 공연만 모아서 보고 싶어요.",
+    "expectedPolicyIds": [
+      "ADMIN-01"
+    ]
+  },
+  {
+    "id": "EXP-070",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연을 반려할 때 이유를 적지 않아도 처리할 수 있나요?",
+    "expectedPolicyIds": [
+      "ADMIN-03"
+    ]
+  },
+  {
+    "id": "EXP-072",
+    "category": "POLICY_CONFUSION",
+    "question": "정지된 회원 계정을 풀어주는 건 판매자가 하는 일인가요?",
+    "expectedPolicyIds": [
+      "ADMIN-06"
+    ]
+  },
+  {
+    "id": "EXP-073",
+    "category": "COMPOSITE",
+    "question": "관리자가 회원을 정지할 때 이유도 남기고 나중에 다시 해제할 수 있나요?",
+    "expectedPolicyIds": [
+      "ADMIN-05",
+      "ADMIN-06"
+    ]
+  },
+  {
+    "id": "EXP-075",
+    "category": "IMPLICIT",
+    "question": "오늘 매출 통계가 이상해서 관리자가 다시 계산하고 싶어요.",
+    "expectedPolicyIds": [
+      "ADMIN-08"
+    ]
+  },
+  {
+    "id": "EXP-076",
+    "category": "NOISY",
+    "question": "없는 정산번호라는데 목록에서 다시 찾아야됨?",
+    "expectedPolicyIds": [
+      "SETTLEMENT-09"
+    ]
+  },
+  {
+    "id": "EXP-077",
+    "category": "IMPLICIT",
+    "question": "필수 항목을 빼먹었더니 요청값이 잘못됐다고 나와요.",
+    "expectedPolicyIds": [
+      "COMMON-01"
+    ]
+  },
+  {
+    "id": "EXP-078",
+    "category": "POLICY_CONFUSION",
+    "question": "같은 요청을 다시 보냈더니 이미 처리됐다고 하는데 서버가 고장 난 건가요?",
+    "expectedPolicyIds": [
+      "COMMON-02"
+    ]
+  },
+  {
+    "id": "EXP-079",
+    "category": "COLLOQUIAL",
+    "question": "목록에 아무것도 안 뜨면 오류 난 거예요, 조건에 맞는 게 없는 거예요?",
+    "expectedPolicyIds": [
+      "COMMON-07"
+    ]
+  },
+  {
+    "id": "EXP-080",
+    "category": "COMPOSITE",
+    "question": "로그인 화면으로 다시 보내졌는데 토큰이 끝난 건지 제 계정 권한이 없는 건지 어떻게 구분해요?",
+    "expectedPolicyIds": [
+      "AUTH-02",
+      "AUTH-09"
+    ]
+  }
+]
