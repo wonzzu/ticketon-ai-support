@@ -1,0 +1,412 @@
+[
+  {
+    "id": "EVAL-001",
+    "category": "PARAPHRASE",
+    "question": "좌석 잡아둔 거 결제 안 하면 언제 다시 풀려요?",
+    "expectedPolicyIds": [
+      "SEAT-04"
+    ]
+  },
+  {
+    "id": "EVAL-002",
+    "category": "POLICY_CONFUSION",
+    "question": "좌석을 화면에서 클릭하면 바로 제 자리가 되는 건가요?",
+    "expectedPolicyIds": [
+      "SEAT-01"
+    ]
+  },
+  {
+    "id": "EVAL-003",
+    "category": "WRONG_ASSUMPTION",
+    "question": "한 번에 좌석 네 개까지 예매할 수 있죠?",
+    "expectedPolicyIds": [
+      "RESERVATION-02"
+    ]
+  },
+  {
+    "id": "EVAL-004",
+    "category": "BOUNDARY",
+    "question": "공연 당일 아침이면 아직 시작 전인데 취소할 수 있나요?",
+    "expectedPolicyIds": [
+      "REFUND-01"
+    ]
+  },
+  {
+    "id": "EVAL-005",
+    "category": "BOUNDARY",
+    "question": "공연이 정확히 3일 남았고 예매한 지 23시간 됐는데 수수료 없이 취소할 수 있나요?",
+    "expectedPolicyIds": [
+      "REFUND-03"
+    ]
+  },
+  {
+    "id": "EVAL-006",
+    "category": "POLICY_CONFUSION",
+    "question": "좌석 세 장을 같이 예매했는데 한 장만 따로 취소하고 싶어요.",
+    "expectedPolicyIds": [
+      "REFUND-08"
+    ]
+  },
+  {
+    "id": "EVAL-007",
+    "category": "PARAPHRASE",
+    "question": "취소 완료됐는데 카드에 돈은 언제 들어와요?",
+    "expectedPolicyIds": [
+      "REFUND-07"
+    ]
+  },
+  {
+    "id": "EVAL-008",
+    "category": "WRONG_ASSUMPTION",
+    "question": "대기 화면을 새로고침하면 순번이 처음부터 다시 발급되나요?",
+    "expectedPolicyIds": [
+      "QUEUE-05"
+    ]
+  },
+  {
+    "id": "EVAL-009",
+    "category": "PARAPHRASE",
+    "question": "대기 중에는 화면이 몇 초마다 갱신돼요?",
+    "expectedPolicyIds": [
+      "QUEUE-03"
+    ]
+  },
+  {
+    "id": "EVAL-010",
+    "category": "POLICY_CONFUSION",
+    "question": "대기열을 통과한 뒤 받은 입장 권한은 좌석 선점처럼 7분 동안 유지되나요?",
+    "expectedPolicyIds": [
+      "QUEUE-04"
+    ]
+  },
+  {
+    "id": "EVAL-011",
+    "category": "BOUNDARY",
+    "question": "공연 날짜가 딱 10일 남았는데 지금 취소하면 수수료가 붙나요?",
+    "expectedPolicyIds": [
+      "REFUND-02"
+    ]
+  },
+  {
+    "id": "EVAL-012",
+    "category": "BOUNDARY",
+    "question": "공연 7일 전에 취소하면 결제금액의 몇 퍼센트를 떼나요?",
+    "expectedPolicyIds": [
+      "REFUND-02"
+    ]
+  },
+  {
+    "id": "EVAL-013",
+    "category": "PARAPHRASE",
+    "question": "할인받기 전 가격 말고 실제 카드로 낸 돈에서 취소 수수료를 계산하는 거죠?",
+    "expectedPolicyIds": [
+      "REFUND-04"
+    ]
+  },
+  {
+    "id": "EVAL-014",
+    "category": "PARAPHRASE",
+    "question": "주최 측에서 공연을 아예 취소했으면 제가 수수료를 내야 하나요?",
+    "expectedPolicyIds": [
+      "REFUND-05"
+    ]
+  },
+  {
+    "id": "EVAL-015",
+    "category": "PARAPHRASE",
+    "question": "예매하고 나서 공연 날짜가 바뀌었는데 수수료 없이 취소할 수 있나요?",
+    "expectedPolicyIds": [
+      "REFUND-06"
+    ]
+  },
+  {
+    "id": "EVAL-016",
+    "category": "WRONG_ASSUMPTION",
+    "question": "방금 취소한 예매를 실수였다고 하면 다시 살려줄 수 있죠?",
+    "expectedPolicyIds": [
+      "REFUND-09"
+    ]
+  },
+  {
+    "id": "EVAL-017",
+    "category": "PARAPHRASE",
+    "question": "좌석을 고르려면 무조건 그 공연 회차 대기줄부터 통과해야 하나요?",
+    "expectedPolicyIds": [
+      "QUEUE-01"
+    ]
+  },
+  {
+    "id": "EVAL-018",
+    "category": "WRONG_ASSUMPTION",
+    "question": "예매 버튼을 제가 먼저 눌렀으면 서버에 늦게 도착해도 앞 순번이죠?",
+    "expectedPolicyIds": [
+      "QUEUE-02"
+    ]
+  },
+  {
+    "id": "EVAL-019",
+    "category": "PARAPHRASE",
+    "question": "제 차례가 오면 입장 버튼을 또 눌러야 좌석 화면으로 넘어가나요?",
+    "expectedPolicyIds": [
+      "QUEUE-03"
+    ]
+  },
+  {
+    "id": "EVAL-020",
+    "category": "BOUNDARY",
+    "question": "대기열을 통과하고 10분 동안 예매를 시작하지 않으면 어떻게 돼요?",
+    "expectedPolicyIds": [
+      "QUEUE-04"
+    ]
+  },
+  {
+    "id": "EVAL-021",
+    "category": "PARAPHRASE",
+    "question": "입장 권한이 이미 끝난 뒤 다시 들어가면 예전 순번을 계속 쓰나요?",
+    "expectedPolicyIds": [
+      "QUEUE-05"
+    ]
+  },
+  {
+    "id": "EVAL-022",
+    "category": "POLICY_CONFUSION",
+    "question": "좌석을 선택해놨는데 예매 요청 전 다른 사람이 가져갈 수도 있나요?",
+    "expectedPolicyIds": [
+      "SEAT-01"
+    ]
+  },
+  {
+    "id": "EVAL-023",
+    "category": "BOUNDARY",
+    "question": "좌석 보호 7분은 좌석을 누른 순간부터 세는 건가요, 예매 요청이 성공한 순간부터인가요?",
+    "expectedPolicyIds": [
+      "SEAT-02"
+    ]
+  },
+  {
+    "id": "EVAL-024",
+    "category": "PARAPHRASE",
+    "question": "두 사람이 같은 좌석을 동시에 예매하면 둘 다 잡힐 수도 있나요?",
+    "expectedPolicyIds": [
+      "SEAT-03"
+    ]
+  },
+  {
+    "id": "EVAL-025",
+    "category": "WRONG_ASSUMPTION",
+    "question": "선점 시간이 끝났어도 결제창이 열려 있으면 그대로 결제할 수 있죠?",
+    "expectedPolicyIds": [
+      "SEAT-04"
+    ]
+  },
+  {
+    "id": "EVAL-026",
+    "category": "POLICY_CONFUSION",
+    "question": "예매 요청이 성공했다는 안내를 받으면 결제 전이어도 최종 예매 완료인가요?",
+    "expectedPolicyIds": [
+      "RESERVATION-01"
+    ]
+  },
+  {
+    "id": "EVAL-027",
+    "category": "BOUNDARY",
+    "question": "VIP석 두 개와 일반석 두 개면 등급이 다르니까 한 번에 예약할 수 있나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-02"
+    ]
+  },
+  {
+    "id": "EVAL-028",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연이 시작했어도 빈 좌석이 보이면 새로 예매할 수 있는 거 아닌가요?",
+    "expectedPolicyIds": [
+      "RESERVATION-03"
+    ]
+  },
+  {
+    "id": "EVAL-029",
+    "category": "PARAPHRASE",
+    "question": "결제까지 끝난 표를 다른 좌석이나 다른 회차로 바로 바꿀 수 있나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-04"
+    ]
+  },
+  {
+    "id": "EVAL-030",
+    "category": "PARAPHRASE",
+    "question": "카드 결제가 한 번 실패했는데 좌석 보호 시간이 남아 있으면 다시 결제해도 되나요?",
+    "expectedPolicyIds": [
+      "PAYMENT-01"
+    ]
+  },
+  {
+    "id": "EVAL-031",
+    "category": "WRONG_ASSUMPTION",
+    "question": "결제 버튼을 여러 번 누르면 같은 예매가 중복 결제될 수도 있나요?",
+    "expectedPolicyIds": [
+      "PAYMENT-02"
+    ]
+  },
+  {
+    "id": "EVAL-032",
+    "category": "BOUNDARY",
+    "question": "예매한 지 정확히 24시간 됐고 공연은 4일 남았어요. 취소 수수료가 없나요?",
+    "expectedPolicyIds": [
+      "REFUND-03"
+    ]
+  },
+  {
+    "id": "EVAL-033",
+    "category": "WRONG_ASSUMPTION",
+    "question": "공연이 이틀 남았어도 예매 후 24시간 안이면 무조건 무료 취소죠?",
+    "expectedPolicyIds": [
+      "REFUND-03"
+    ]
+  },
+  {
+    "id": "EVAL-034",
+    "category": "WRONG_ASSUMPTION",
+    "question": "출연진이 바뀌기만 하면 별도 안내가 없어도 무조건 무료 취소 가능한가요?",
+    "expectedPolicyIds": [
+      "REFUND-06"
+    ]
+  },
+  {
+    "id": "EVAL-035",
+    "category": "BOUNDARY",
+    "question": "금요일에 환불 처리가 끝났으면 토요일과 일요일도 3~5일 계산에 들어가나요?",
+    "expectedPolicyIds": [
+      "REFUND-07"
+    ]
+  },
+  {
+    "id": "EVAL-036",
+    "category": "PARAPHRASE",
+    "question": "여러 좌석 중 원하는 것만 다시 잡으려면 기존 예매를 전부 취소해야 하나요?",
+    "expectedPolicyIds": [
+      "REFUND-08"
+    ]
+  },
+  {
+    "id": "EVAL-037",
+    "category": "WRONG_ASSUMPTION",
+    "question": "취소한 뒤 바로 다시 예매하면 원래 좌석은 제게 보장되죠?",
+    "expectedPolicyIds": [
+      "REFUND-09"
+    ]
+  },
+  {
+    "id": "EVAL-038",
+    "category": "WRONG_ASSUMPTION",
+    "question": "같은 공연이면 낮 공연 대기 순번으로 저녁 공연에도 들어갈 수 있나요?",
+    "expectedPolicyIds": [
+      "QUEUE-01"
+    ]
+  },
+  {
+    "id": "EVAL-039",
+    "category": "POLICY_CONFUSION",
+    "question": "화면에는 시간이 남아 있어도 좌석 선점 만료 여부는 결제할 때 서버 상태를 기준으로 판단하나요?",
+    "expectedPolicyIds": [
+      "SEAT-02"
+    ]
+  },
+  {
+    "id": "EVAL-040",
+    "category": "PARAPHRASE",
+    "question": "결제한 좌석을 바꾸려고 취소하면 일반 취소 수수료가 붙을 수도 있나요?",
+    "expectedPolicyIds": [
+      "RESERVATION-04"
+    ]
+  },
+  {
+    "id": "EVAL-041",
+    "category": "COMPOSITE",
+    "question": "결제가 실패했고 그사이 좌석 선점 7분도 끝났어요. 같은 예매로 다시 결제할 수 있나요?",
+    "expectedPolicyIds": [
+      "PAYMENT-01",
+      "SEAT-04"
+    ]
+  },
+  {
+    "id": "EXP-001",
+    "category": "PARAPHRASE",
+    "question": "로그인할 때 뭘 입력해야 들어갈 수 있어요?",
+    "expectedPolicyIds": [
+      "AUTH-01"
+    ]
+  },
+  {
+    "id": "EXP-006",
+    "category": "PARAPHRASE",
+    "question": "일반 사용자 계정은 어디서 만들어요?",
+    "expectedPolicyIds": [
+      "MEMBER-01"
+    ]
+  },
+  {
+    "id": "EXP-011",
+    "category": "PARAPHRASE",
+    "question": "지금 예매할 수 있는 공연들을 한꺼번에 보고 싶어요.",
+    "expectedPolicyIds": [
+      "EVENT-01"
+    ]
+  },
+  {
+    "id": "EXP-018",
+    "category": "PARAPHRASE",
+    "question": "공연 순위는 어느 화면에서 볼 수 있나요?",
+    "expectedPolicyIds": [
+      "EVENT-14"
+    ]
+  },
+  {
+    "id": "EXP-043",
+    "category": "PARAPHRASE",
+    "question": "지금 받을 수 있는 선착순 할인권은 어디서 봐요?",
+    "expectedPolicyIds": [
+      "COUPON-01"
+    ]
+  },
+  {
+    "id": "EXP-053",
+    "category": "PARAPHRASE",
+    "question": "판매자가 새 공연을 등록하려면 어디서 시작하나요?",
+    "expectedPolicyIds": [
+      "SELLER-01"
+    ]
+  },
+  {
+    "id": "EXP-063",
+    "category": "PARAPHRASE",
+    "question": "판매한 공연들의 정산 내역을 한꺼번에 보고 싶어요.",
+    "expectedPolicyIds": [
+      "SETTLEMENT-01"
+    ]
+  },
+  {
+    "id": "EXP-068",
+    "category": "PARAPHRASE",
+    "question": "판매자 등급이 달라지면 떼는 수수료도 달라지나요?",
+    "expectedPolicyIds": [
+      "SETTLEMENT-05"
+    ]
+  },
+  {
+    "id": "EXP-071",
+    "category": "PARAPHRASE",
+    "question": "관리자가 회원을 이름이나 조건으로 찾아 페이지별로 볼 수 있나요?",
+    "expectedPolicyIds": [
+      "ADMIN-04"
+    ]
+  },
+  {
+    "id": "EXP-074",
+    "category": "PARAPHRASE",
+    "question": "공연장 좌석 배치를 새로 등록하거나 고치는 관리 기능이 있나요?",
+    "expectedPolicyIds": [
+      "ADMIN-07"
+    ]
+  }
+]
+

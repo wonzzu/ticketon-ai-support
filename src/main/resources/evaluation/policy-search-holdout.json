@@ -1,0 +1,116 @@
+[
+  {
+    "id": "EVAL-042",
+    "category": "BOUNDARY",
+    "question": "공연 전날 밤이면 아직 취소할 수 있는 기간인가요?",
+    "expectedPolicyIds": ["REFUND-01"]
+  },
+  {
+    "id": "EVAL-043",
+    "category": "BOUNDARY",
+    "question": "공연까지 9일 남았을 때 취소하면 수수료율이 어떻게 돼요?",
+    "expectedPolicyIds": ["REFUND-02"]
+  },
+  {
+    "id": "EVAL-044",
+    "category": "BOUNDARY",
+    "question": "공연 날짜가 6일 앞으로 다가왔는데 취소 수수료는 몇 퍼센트인가요?",
+    "expectedPolicyIds": ["REFUND-02"]
+  },
+  {
+    "id": "EVAL-045",
+    "category": "POLICY_CONFUSION",
+    "question": "좌석 여러 장을 예매하면 취소 수수료를 좌석마다 따로 계산하나요?",
+    "expectedPolicyIds": ["REFUND-04"]
+  },
+  {
+    "id": "EVAL-046",
+    "category": "POLICY_CONFUSION",
+    "question": "나중에 공연이 주최 측 사정으로 취소됐는데 저는 그 전에 먼저 취소했어요. 그래도 전액 환불 규칙이 적용되나요?",
+    "expectedPolicyIds": ["REFUND-05"]
+  },
+  {
+    "id": "EVAL-047",
+    "category": "BOUNDARY",
+    "question": "공연 장소가 변경된 경우 언제까지 수수료 없이 취소할 수 있어요?",
+    "expectedPolicyIds": ["REFUND-06"]
+  },
+  {
+    "id": "EVAL-048",
+    "category": "BOUNDARY",
+    "question": "환불 처리 기간을 셀 때 공휴일도 영업일로 치나요?",
+    "expectedPolicyIds": ["REFUND-07"]
+  },
+  {
+    "id": "EVAL-049",
+    "category": "WRONG_ASSUMPTION",
+    "question": "다섯 좌석을 한 예매로 샀다면 그중 두 좌석만 골라 취소할 수 있죠?",
+    "expectedPolicyIds": ["REFUND-08"]
+  },
+  {
+    "id": "EVAL-050",
+    "category": "PARAPHRASE",
+    "question": "취소 처리가 끝난 표를 취소 전 상태로 복구할 방법이 있나요?",
+    "expectedPolicyIds": ["REFUND-09"]
+  },
+  {
+    "id": "EVAL-051",
+    "category": "POLICY_CONFUSION",
+    "question": "여러 사람이 같은 순간 대기열에 들어오면 모두 같은 순번을 받나요?",
+    "expectedPolicyIds": ["QUEUE-02"]
+  },
+  {
+    "id": "EVAL-052",
+    "category": "PARAPHRASE",
+    "question": "대기 인원 조회가 한 번 실패하면 대기열에서 바로 쫓겨나는 건가요?",
+    "expectedPolicyIds": ["QUEUE-03"]
+  },
+  {
+    "id": "EVAL-053",
+    "category": "POLICY_CONFUSION",
+    "question": "대기열 통과 권한 10분과 좌석 보호 7분은 같은 타이머인가요?",
+    "expectedPolicyIds": ["QUEUE-04"]
+  },
+  {
+    "id": "EVAL-054",
+    "category": "PARAPHRASE",
+    "question": "이미 대기열을 통과한 사람이 화면을 새로고침하면 남은 입장 권한은 어떻게 돼요?",
+    "expectedPolicyIds": ["QUEUE-05"]
+  },
+  {
+    "id": "EVAL-055",
+    "category": "WRONG_ASSUMPTION",
+    "question": "좌석 선택 화면에서 좌석에 체크 표시만 해도 7분 보호가 시작되죠?",
+    "expectedPolicyIds": ["SEAT-01"]
+  },
+  {
+    "id": "EVAL-056",
+    "category": "POLICY_CONFUSION",
+    "question": "제가 좌석을 먼저 클릭했는데 다른 사람의 예매 요청이 먼저 처리되면 누가 좌석을 가져가나요?",
+    "expectedPolicyIds": ["SEAT-03"]
+  },
+  {
+    "id": "EVAL-057",
+    "category": "WRONG_ASSUMPTION",
+    "question": "좌석 선점까지 성공했으니 결제를 하지 않아도 예매가 확정된 거죠?",
+    "expectedPolicyIds": ["RESERVATION-01"]
+  },
+  {
+    "id": "EVAL-058",
+    "category": "PARAPHRASE",
+    "question": "네 명이 같이 가려면 좌석 네 개를 한 주문으로 잡지 말고 나눠서 예매해야 하나요?",
+    "expectedPolicyIds": ["RESERVATION-02"]
+  },
+  {
+    "id": "EVAL-059",
+    "category": "BOUNDARY",
+    "question": "공연 시작 여부를 해외 현지 시간이 아니라 한국 시간으로 판단하나요?",
+    "expectedPolicyIds": ["RESERVATION-03"]
+  },
+  {
+    "id": "EVAL-060",
+    "category": "WRONG_ASSUMPTION",
+    "question": "결제가 이미 끝난 예매에 같은 결제 요청을 보내면 결제가 한 건 더 생기나요?",
+    "expectedPolicyIds": ["PAYMENT-02"]
+  }
+]

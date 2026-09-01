@@ -1,5 +1,6 @@
 package com.ticketon.ai.policy;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,16 +15,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.policy-ingestion.enabled", havingValue = "true")
 public class PolicyIngestionService {
 
     private final PolicyMarkdownParser parser;
     private final VectorStore vectorStore;
-
-    public PolicyIngestionService(PolicyMarkdownParser parser, VectorStore vectorStore) {
-        this.parser = parser;
-        this.vectorStore = vectorStore;
-    }
 
     public int ingest(Path policyDirectory) {
         List<Document> documents = readPolicyChunks(policyDirectory).stream()
@@ -31,6 +28,7 @@ public class PolicyIngestionService {
                 .toList();
 
         vectorStore.add(documents);
+
         return documents.size();
     }
 
@@ -42,22 +40,29 @@ public class PolicyIngestionService {
                     .flatMap(path -> parser.parse(path).stream())
                     .toList();
         } catch (IOException e) {
-            throw new IllegalStateException("정책 디렉터리를 읽을 수 없습니다: " + policyDirectory, e);
+            throw new IllegalStateException(
+                    "정책 디렉터리를 읽을 수 없습니다: " + policyDirectory,
+                    e
+            );
         }
     }
 
     private Document toDocument(PolicyChunk chunk) {
         String documentId = UUID.nameUUIDFromBytes(
-                ("ticketon-policy:" + chunk.policyId()).getBytes(StandardCharsets.UTF_8)
+                ("ticketon-policy:" + chunk.chunkId()).getBytes(StandardCharsets.UTF_8)
         ).toString();
 
-        Map<String, Object> metadata = Map.of(
-                "policyId", chunk.policyId(),
-                "domain", chunk.domain(),
-                "title", chunk.title(),
-                "version", chunk.version(),
-                "effectiveFrom", chunk.effectiveFrom().toString(),
-                "status", chunk.status()
+        Map<String, Object> metadata = Map.ofEntries(
+                Map.entry("chunkId", chunk.chunkId()),
+                Map.entry("policyId", chunk.policyId()),
+                Map.entry("documentType", chunk.documentType()),
+                Map.entry("audience", chunk.audience()),
+                Map.entry("implementationStatus", chunk.implementationStatus()),
+                Map.entry("domain", chunk.domain()),
+                Map.entry("title", chunk.title()),
+                Map.entry("version", chunk.version()),
+                Map.entry("effectiveFrom", chunk.effectiveFrom().toString()),
+                Map.entry("status", chunk.status())
         );
 
         return Document.builder()

@@ -1,0 +1,137 @@
+[
+  {
+    "id": "GEN-HOLD-001",
+    "category": "SINGLE_POLICY",
+    "question": "같은 요청을 같은 식별자로 다시 보내면 새로 한 번 더 처리되나요?",
+    "expectedPolicyIds": ["COMMON-02"],
+    "mustIncludeFacts": ["이미 완료되었거나 같은 식별자로 처리된 요청은 다시 처리되지 않고 오류가 발생할 수 있다", "현재 처리 결과를 먼저 확인해야 한다"],
+    "mustNotIncludeFacts": ["같은 식별자의 요청도 보낼 때마다 새로 처리된다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-002",
+    "category": "SINGLE_POLICY",
+    "question": "내가 예매하지 않은 공연에도 후기를 쓸 수 있나요?",
+    "expectedPolicyIds": ["REVIEW-01"],
+    "mustIncludeFacts": ["예매한 공연에만 후기를 작성할 수 있다"],
+    "mustNotIncludeFacts": ["예매하지 않은 공연에도 후기를 작성할 수 있다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-003",
+    "category": "SINGLE_POLICY",
+    "question": "공연 포스터로 PDF 파일을 올려도 되나요?",
+    "expectedPolicyIds": ["SELLER-11"],
+    "mustIncludeFacts": ["공연 포스터는 이미지 파일만 등록할 수 있다"],
+    "mustNotIncludeFacts": ["PDF 파일을 포스터로 등록할 수 있다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-004",
+    "category": "MULTI_POLICY",
+    "question": "예매한 지 10시간 됐지만 공연이 내일이면 24시간 무료 취소가 되나요?",
+    "expectedPolicyIds": ["REFUND-02", "REFUND-03"],
+    "mustIncludeFacts": ["공연일까지 2일 이하로 남으면 예매 후 24시간 이내여도 무료 취소 예외가 적용되지 않는다", "일반 취소 수수료 기준을 따른다"],
+    "mustNotIncludeFacts": ["예매 후 24시간 이내면 공연일까지 남은 날짜와 관계없이 무료 취소된다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-005",
+    "category": "MULTI_POLICY",
+    "question": "같은 공연이라도 회차가 다르면 장소와 좌석 가격이 모두 달라질 수 있나요?",
+    "expectedPolicyIds": ["VENUE-04", "VENUE-06"],
+    "mustIncludeFacts": ["공연 회차별로 장소와 시간이 정해진다", "좌석 등급과 가격도 회차별로 설정되어 달라질 수 있다"],
+    "mustNotIncludeFacts": ["같은 공연은 모든 회차의 장소와 좌석 가격이 반드시 같다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-006",
+    "category": "MULTI_POLICY",
+    "question": "정지된 회원을 관리자가 해제하면 다시 로그인하고 회원 기능을 쓸 수 있나요?",
+    "expectedPolicyIds": ["MEMBER-10", "ADMIN-06"],
+    "mustIncludeFacts": ["정지 상태에서는 로그인이나 회원 기능이 제한될 수 있다", "관리자가 정지를 해제하면 정상 상태로 돌아가 허용된 회원 기능을 다시 이용할 수 있다"],
+    "mustNotIncludeFacts": ["정지 해제 후에도 계정은 영구적으로 이용할 수 없다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-007",
+    "category": "BOUNDARY",
+    "question": "후기 별점을 정확히 1점으로 등록해도 되나요?",
+    "expectedPolicyIds": ["REVIEW-03"],
+    "mustIncludeFacts": ["별점은 1점부터 5점까지 허용된다", "정확히 1점은 허용 범위다"],
+    "mustNotIncludeFacts": ["1점은 허용 범위보다 낮다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-008",
+    "category": "BOUNDARY",
+    "question": "공연까지 정확히 9일 남았을 때 취소하면 수수료는 몇 퍼센트예요?",
+    "expectedPolicyIds": ["REFUND-02"],
+    "mustIncludeFacts": ["공연일까지 7일 이상 9일 이하 남으면 결제금액의 10% 수수료가 적용된다", "정확히 9일은 10% 구간이다"],
+    "mustNotIncludeFacts": ["정확히 9일 남으면 수수료가 없다", "정확히 9일 남으면 20% 수수료다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-009",
+    "category": "BOUNDARY",
+    "question": "공연이 이미 시작된 직후라도 빈 좌석이면 새로 예매할 수 있나요?",
+    "expectedPolicyIds": ["RESERVATION-03"],
+    "mustIncludeFacts": ["공연이 시작된 뒤에는 빈 좌석이 있어도 신규 예매할 수 없다"],
+    "mustNotIncludeFacts": ["공연 시작 후에도 빈 좌석이면 신규 예매할 수 있다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-010",
+    "category": "UNANSWERABLE",
+    "question": "반려동물과 같이 공연장에 입장할 수 있나요?",
+    "expectedPolicyIds": [],
+    "mustIncludeFacts": [],
+    "mustNotIncludeFacts": ["반려동물과 공연장에 입장할 수 있다", "반려동물 입장이 금지된다"],
+    "shouldAbstain": true
+  },
+  {
+    "id": "GEN-HOLD-011",
+    "category": "UNANSWERABLE",
+    "question": "군인이면 예매 가격을 할인받을 수 있나요?",
+    "expectedPolicyIds": [],
+    "mustIncludeFacts": [],
+    "mustNotIncludeFacts": ["군인 할인이 제공된다", "군인 할인율이 정해져 있다"],
+    "shouldAbstain": true
+  },
+  {
+    "id": "GEN-HOLD-012",
+    "category": "UNANSWERABLE",
+    "question": "공연장에 큰 여행 가방을 맡길 보관소가 있나요?",
+    "expectedPolicyIds": [],
+    "mustIncludeFacts": [],
+    "mustNotIncludeFacts": ["공연장에 여행 가방 보관소가 있다", "짐 보관 서비스가 제공된다"],
+    "shouldAbstain": true
+  },
+  {
+    "id": "GEN-HOLD-013",
+    "category": "POLICY_CONFUSION",
+    "question": "결제 버튼을 두 번 누른 것과 같은 예매를 새로 만든 것은 같은 중복 처리인가요?",
+    "expectedPolicyIds": ["PAYMENT-02", "RESERVATION-01"],
+    "mustIncludeFacts": ["동일 예매의 중복 결제 요청은 결제를 한 건 더 만들지 않도록 처리된다", "예매 생성과 결제 요청은 서로 다른 단계다"],
+    "mustNotIncludeFacts": ["결제 버튼을 누를 때마다 새 예매와 결제가 반드시 생성된다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-014",
+    "category": "POLICY_CONFUSION",
+    "question": "로그인했는데 판매자 화면에 못 들어가는 건 토큰이 만료된 건가요, 권한이 없는 건가요?",
+    "expectedPolicyIds": ["AUTH-07", "AUTH-09"],
+    "mustIncludeFacts": ["로그인 여부와 판매자 권한 보유 여부는 구분된다", "인증 필요 오류와 권한 없음 오류는 서로 다른 상태다"],
+    "mustNotIncludeFacts": ["로그인한 모든 회원은 판매자 화면을 이용할 수 있다", "판매자 화면 접근 실패는 항상 토큰 만료 때문이다"],
+    "shouldAbstain": false
+  },
+  {
+    "id": "GEN-HOLD-015",
+    "category": "POLICY_CONFUSION",
+    "question": "지난 공연 목록에 있다는 건 공연 상태가 무조건 종료로 바뀌었다는 뜻인가요?",
+    "expectedPolicyIds": ["EVENT-12", "EVENT-13"],
+    "mustIncludeFacts": ["종료된 공연 상태와 지난 공연 조회 기능은 구분된다", "지난 공연 목록은 과거 공연을 조회하는 기능이다"],
+    "mustNotIncludeFacts": ["지난 공연 목록에 보이면 다른 조건과 관계없이 상태가 반드시 종료다"],
+    "shouldAbstain": false
+  }
+]
