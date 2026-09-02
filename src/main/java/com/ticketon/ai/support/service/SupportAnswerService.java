@@ -5,6 +5,7 @@ import com.ticketon.ai.policy.tool.PolicySearchTool;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.tool.LoginRequiredTool;
+import com.ticketon.ai.tool.result.ToolFailureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
@@ -64,10 +65,14 @@ public class SupportAnswerService {
 
         configureTools(request, accessToken);
 
-        return request
-                .options(OllamaChatOptions.builder().disableThinking())
-                .call()
-                .content();
+        try {
+            return request
+                    .options(OllamaChatOptions.builder().disableThinking())
+                    .call()
+                    .content();
+        } catch (ToolFailureException failure) {
+            return failure.getFailureCode().getSafeMessage();
+        }
     }
 
     private void configureTools(
@@ -89,4 +94,5 @@ public class SupportAnswerService {
                         accessToken.get()
                 ));
     }
+
 }
