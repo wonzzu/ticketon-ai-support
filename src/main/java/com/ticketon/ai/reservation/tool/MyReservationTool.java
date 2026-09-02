@@ -6,6 +6,7 @@ import com.ticketon.ai.client.TicketOnClientException;
 import com.ticketon.ai.reservation.dto.MyReservationSummary;
 import com.ticketon.ai.tool.result.ToolFailureCode;
 import com.ticketon.ai.tool.result.ToolResult;
+import com.ticketon.ai.tool.result.ToolResultConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
@@ -21,7 +22,10 @@ public class MyReservationTool {
 
     private final TicketOnClient ticketOnClient;
 
-    @Tool(description = "로그인한 사용자의 TicketOn 예매 목록을 조회합니다. 사용자가 자신의 실제 예매, 공연 일정 또는 예매 상태를 묻는 경우에만 사용합니다.")
+    @Tool(
+            description = "로그인한 사용자의 TicketOn 예매 목록을 조회합니다. 사용자가 자신의 실제 예매, 공연 일정 또는 예매 상태를 묻는 경우에만 사용합니다.",
+            resultConverter = ToolResultConverter.class
+    )
     public ToolResult<List<MyReservationSummary>> getMyReservations(
             ToolContext toolContext
     ) {

@@ -9,6 +9,7 @@ import com.ticketon.ai.refund.RefundSnapshot;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.tool.result.ToolFailureCode;
 import com.ticketon.ai.tool.result.ToolResult;
+import com.ticketon.ai.tool.result.ToolResultConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
@@ -31,7 +32,7 @@ public class RefundEstimateTool {
             로그인한 사용자의 특정 예매에 대한 취소 가능 여부, 취소 수수료와 예상 환불액을 계산합니다.
             먼저 getMyReservations로 대상 예매를 확인한 뒤 반환된 reservationId를 사용하세요.
             사용자에게 reservationId를 직접 물어보지 마세요.
-            """)
+            """, resultConverter = ToolResultConverter.class)
     public ToolResult<RefundEstimate> estimateRefund(
             @ToolParam(description = "getMyReservations가 반환한 예매 식별자")
             Long reservationId,
