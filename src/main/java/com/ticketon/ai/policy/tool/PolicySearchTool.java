@@ -1,10 +1,14 @@
 package com.ticketon.ai.policy.tool;
 
+import com.ticketon.ai.policy.context.dto.PolicyContext;
+import com.ticketon.ai.policy.context.service.PolicyContextService;
+import com.ticketon.ai.policy.evidence.domain.PolicyEvidenceSufficiency;
+import com.ticketon.ai.policy.evidence.service.PolicyEvidenceSufficiencyService;
 import com.ticketon.ai.policy.search.dto.PolicySearchResponse;
 import com.ticketon.ai.policy.search.service.PolicyRetrievalService;
+import com.ticketon.ai.policy.tool.dto.PolicySearchToolResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,11 +18,21 @@ import java.util.List;
 public class PolicySearchTool {
 
     private final PolicyRetrievalService policyRetrievalService;
+    private final PolicyContextService policyContextService;
+    private final PolicyEvidenceSufficiencyService evidenceSufficiencyService;
 
-    @Tool(description = "TicketOn의 일반 정책, 이용 방법, 제한 조건을 검색합니다. 개인의 실제 예매나 결제 상태가 아니라 정책 근거가 필요한 질문에 사용합니다.")
-    public List<PolicySearchResponse> searchPolicies(
-            @ToolParam(description = "사용자가 물어본 TicketOn 정책 질문") String question
-    ) {
-        return policyRetrievalService.retrieve(question);
+    @Tool
+    public PolicySearchToolResult searchPolicies(String question) {
+        List<PolicySearchResponse> policies =
+                policyRetrievalService.retrieve(question);
+        PolicyContext context = policyContextService.build(policies);
+        PolicyEvidenceSufficiency evidence =
+                evidenceSufficiencyService.evaluate(question, context);
+
+        if (!evidence.sufficient()) {
+            return PolicySearchToolResult.insufficient();
+        }
+
+        return PolicySearchToolResult.sufficient(policies);
     }
 }
