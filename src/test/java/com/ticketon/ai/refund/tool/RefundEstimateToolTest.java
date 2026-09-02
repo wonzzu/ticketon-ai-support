@@ -6,16 +6,16 @@ import com.ticketon.ai.refund.RefundCalculator;
 import com.ticketon.ai.refund.RefundEstimate;
 import com.ticketon.ai.refund.RefundSnapshot;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
+import com.ticketon.ai.tool.result.ToolFailureCode;
+import com.ticketon.ai.tool.result.ToolResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.model.ToolContext;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -59,9 +59,10 @@ class RefundEstimateToolTest {
         when(ticketOnClient.getRefundSnapshot(10L, token)).thenReturn(snapshot);
         when(refundCalculator.calculate(any(), any())).thenReturn(estimate);
 
-        RefundEstimate result = tool.estimateRefund(10L, context);
+        ToolResult<RefundEstimate> result =
+                tool.estimateRefund(10L, context);
 
-        assertThat(result).isSameAs(estimate);
+        assertThat(result).isEqualTo(ToolResult.success(estimate));
         verify(ticketOnClient).getRefundSnapshot(10L, token);
         verify(refundCalculator).calculate(any(RefundSnapshot.class), any());
     }
@@ -70,9 +71,8 @@ class RefundEstimateToolTest {
     void JWT가_없으면_환불정보를_조회하지_않는다() {
         ToolContext context = new ToolContext(Map.of());
 
-        assertThatThrownBy(() -> tool.estimateRefund(10L, context))
-                .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("401");
+        assertThat(tool.estimateRefund(10L, context))
+                .isEqualTo(ToolResult.failure(ToolFailureCode.AUTH_REQUIRED));
         verify(ticketOnClient, never()).getRefundSnapshot(any(), any());
         verify(refundCalculator, never()).calculate(any(), any());
     }
