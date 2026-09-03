@@ -24,13 +24,7 @@ public class RerankEvaluationRunner implements ApplicationRunner {
         RerankEvaluationResult result =
                 evaluator.evaluate(evaluationLoader.load());
 
-        result.caseResults().stream()
-                .filter(caseResult ->
-                        caseResult.outcome()
-                                != RerankEvaluationResult.Outcome.MAINTAINED
-                                || caseResult.outputIssue()
-                )
-                .forEach(this::logCaseResult);
+        result.caseResults().forEach(this::logCaseResult);
 
         log.info(
                 """
@@ -65,11 +59,12 @@ public class RerankEvaluationRunner implements ApplicationRunner {
 
     private void logCaseResult(RerankEvaluationResult.CaseResult caseResult) {
         log.info(
-                "[{}] {} | expected={} | baseline={} | reranked={} | outputIssue={} | latency={}ms",
-                caseResult.outcome(),
+                "RERANK_CASE|{}|{}|expected={}|baseline={}|scores={}|reranked={}|outputIssue={}|latency={}ms",
                 caseResult.id(),
+                caseResult.outcome(),
                 caseResult.expectedPolicyIds(),
                 caseResult.baselinePolicyIds(),
+                caseResult.baselineSimilarityScores(),
                 caseResult.rerankedPolicyIds(),
                 caseResult.outputIssue(),
                 caseResult.rerankLatencyMs()

@@ -21,7 +21,10 @@ public class PolicySearchTool {
     private final PolicyContextService policyContextService;
     private final PolicyEvidenceSufficiencyService evidenceSufficiencyService;
 
-    @Tool
+    @Tool(description = """
+            TicketOn의 일반 정책, 이용 방법, 제한 조건과 오류 원인을 검색합니다.
+            사용자의 실제 개인 예매 데이터가 필요하지 않은 TicketOn 관련 질문에 사용합니다.
+            """)
     public PolicySearchToolResult searchPolicies(String question) {
         List<PolicySearchResponse> policies =
                 policyRetrievalService.retrieve(question);

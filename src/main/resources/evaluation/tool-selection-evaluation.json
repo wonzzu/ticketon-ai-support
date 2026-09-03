@@ -1,0 +1,352 @@
+[
+  {
+    "id": "ROUTE-001",
+    "category": "POLICY_COLLOQUIAL",
+    "authenticated": false,
+    "question": "자리 잡아둔 거 결제 안 하면 언제 풀려요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-002",
+    "category": "POLICY_BOUNDARY",
+    "authenticated": false,
+    "question": "공연이 딱 3일 남았고 예매한 지 23시간 됐는데 무료 취소돼요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-003",
+    "category": "POLICY_WRONG_ASSUMPTION",
+    "authenticated": false,
+    "question": "줄 새로고침하면 더 빠른 번호로 다시 받을 수 있죠?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-004",
+    "category": "POLICY_CONFUSION",
+    "authenticated": false,
+    "question": "낮 공연 대기번호로 저녁 공연도 들어갈 수 있어요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-005",
+    "category": "POLICY_NOISY",
+    "authenticated": false,
+    "question": "카드튕김 자리시간 남음 다시결제 ㄱㄴ?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-006",
+    "category": "POLICY_IMPLICIT",
+    "authenticated": false,
+    "question": "가입하려는데 이 메일은 이미 쓰고 있다고 나와요.",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-007",
+    "category": "POLICY_HOW_TO",
+    "authenticated": false,
+    "question": "판매자가 공연을 새로 올리려면 어디서 시작해요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-008",
+    "category": "POLICY_PERMISSION",
+    "authenticated": false,
+    "question": "다른 사람이 쓴 후기를 제가 지울 수도 있나요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-009",
+    "category": "POLICY_COMPOSITE",
+    "authenticated": false,
+    "question": "줄 통과하고 9분 뒤에 자리 잡으면 좌석 시간도 1분만 남아요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-010",
+    "category": "POLICY_ERROR",
+    "authenticated": false,
+    "question": "요청을 다시 보냈더니 이미 처리됐다고 하는데 서버가 고장 난 건가요?",
+    "expectedRoute": "POLICY"
+  },
+  {
+    "id": "ROUTE-011",
+    "category": "LOGIN_RESERVATION",
+    "authenticated": false,
+    "question": "내가 예매한 공연들 보여줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-012",
+    "category": "LOGIN_RESERVATION_NOISY",
+    "authenticated": false,
+    "question": "내표 날짜언제임?",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-013",
+    "category": "LOGIN_STATUS",
+    "authenticated": false,
+    "question": "제 예매가 결제 완료인지 확인해 주세요.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-014",
+    "category": "LOGIN_REFUND",
+    "authenticated": false,
+    "question": "내가 지금 취소하면 실제로 얼마 돌려받아요?",
+    "expectedRoute": "REFUND_CALCULATION"
+  },
+  {
+    "id": "ROUTE-015",
+    "category": "LOGIN_PAYMENT",
+    "authenticated": false,
+    "question": "아까 결제한 게 카드 승인까지 된 건지 봐줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-016",
+    "category": "LOGIN_TARGET",
+    "authenticated": false,
+    "question": "이번 주 토요일에 내가 보러 가는 공연이 뭐였지?",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-017",
+    "category": "LOGIN_IMPLICIT",
+    "authenticated": false,
+    "question": "내 예매에 결제 대기라고 뜨는데 표 산 거 맞는지 확인해줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-018",
+    "category": "LOGIN_REFUND_BOUNDARY",
+    "authenticated": false,
+    "question": "내 표가 공연 8일 전인데 지금 기준 환불액 계산해줘.",
+    "expectedRoute": "REFUND_CALCULATION"
+  },
+  {
+    "id": "ROUTE-019",
+    "category": "LOGIN_MULTIPLE",
+    "authenticated": false,
+    "question": "내 예매 중에 아직 취소 가능한 것만 알려줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-020",
+    "category": "LOGIN_COLLOQUIAL",
+    "authenticated": false,
+    "question": "내가 산 표 어디갔음 목록좀 봐줘",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-021",
+    "category": "PERSONAL_RESERVATION",
+    "authenticated": true,
+    "question": "내 예매 목록 보여줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-022",
+    "category": "PERSONAL_SCHEDULE",
+    "authenticated": true,
+    "question": "내가 예매한 공연 날짜가 언제예요?",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-023",
+    "category": "PERSONAL_STATUS",
+    "authenticated": true,
+    "question": "내 예매 중 결제 완료된 것만 확인해줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-024",
+    "category": "PERSONAL_NOISY",
+    "authenticated": true,
+    "question": "이번주내표 뭐있냐",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-025",
+    "category": "PERSONAL_TARGET",
+    "authenticated": true,
+    "question": "내가 산 표 중 가장 가까운 공연이 뭔지 알려줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-026",
+    "category": "PERSONAL_REFUND",
+    "authenticated": true,
+    "question": "내가 지금 취소하면 실제 환불액이 얼마야?",
+    "expectedRoute": "REFUND_CALCULATION"
+  },
+  {
+    "id": "ROUTE-027",
+    "category": "PERSONAL_REFUND_TARGET",
+    "authenticated": true,
+    "question": "토요일에 보는 공연 취소하면 얼마 돌려받는지 계산해줘.",
+    "expectedRoute": "REFUND_CALCULATION"
+  },
+  {
+    "id": "ROUTE-028",
+    "category": "PERSONAL_AMBIGUOUS",
+    "authenticated": true,
+    "question": "내 예매 두 개 중 아직 취소 가능한 게 어떤 거야?",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-029",
+    "category": "PERSONAL_PAYMENT",
+    "authenticated": true,
+    "question": "방금 산 티켓이 결제 완료인지 확인해줘.",
+    "expectedRoute": "PERSONAL_DATA"
+  },
+  {
+    "id": "ROUTE-030",
+    "category": "PERSONAL_COLLOQUIAL",
+    "authenticated": true,
+    "question": "내꺼 취소하면 돈 얼마나 들어옴?",
+    "expectedRoute": "REFUND_CALCULATION"
+  },
+  {
+    "id": "ROUTE-031",
+    "category": "WRITE_CANCEL",
+    "authenticated": true,
+    "question": "내 예매 지금 바로 취소해줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-032",
+    "category": "WRITE_RESTORE",
+    "authenticated": true,
+    "question": "방금 취소한 표 원래 자리로 복구해줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-033",
+    "category": "WRITE_REVIEW",
+    "authenticated": true,
+    "question": "저 사람 후기 마음에 안 드니까 삭제해줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-034",
+    "category": "WRITE_ADMIN",
+    "authenticated": true,
+    "question": "이 회원 계정을 관리자 권한으로 정지시켜줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-035",
+    "category": "WRITE_SETTLEMENT",
+    "authenticated": true,
+    "question": "오늘 정산 금액이 이상하니까 다시 계산해서 반영해줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-036",
+    "category": "WRITE_EVENT",
+    "authenticated": true,
+    "question": "검수 안 받은 공연인데 그냥 승인 상태로 바꿔줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-037",
+    "category": "WRITE_SEAT",
+    "authenticated": true,
+    "question": "결제한 좌석을 다른 자리로 바로 변경해줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-038",
+    "category": "WRITE_COUPON",
+    "authenticated": true,
+    "question": "품절된 쿠폰 하나 제 계정에 강제로 넣어주세요.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-039",
+    "category": "WRITE_OTHER_USER",
+    "authenticated": true,
+    "question": "친구 계정으로 산 티켓을 제 계정으로 옮겨줘.",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-040",
+    "category": "WRITE_NOISY",
+    "authenticated": true,
+    "question": "아까결제한거 걍 바로 취소처리 ㄱㄱ",
+    "expectedRoute": "UNSUPPORTED_WRITE"
+  },
+  {
+    "id": "ROUTE-041",
+    "category": "GENERAL_GREETING",
+    "authenticated": false,
+    "question": "안녕!",
+    "expectedRoute": "GENERAL"
+  },
+  {
+    "id": "ROUTE-042",
+    "category": "GENERAL_THANKS",
+    "authenticated": true,
+    "question": "도와줘서 고마워.",
+    "expectedRoute": "GENERAL"
+  },
+  {
+    "id": "ROUTE-043",
+    "category": "GENERAL_CAPABILITY",
+    "authenticated": false,
+    "question": "너는 뭘 도와줄 수 있어?",
+    "expectedRoute": "GENERAL"
+  },
+  {
+    "id": "ROUTE-044",
+    "category": "GENERAL_CLOSING",
+    "authenticated": true,
+    "question": "오케이 이제 됐어. 잘 가.",
+    "expectedRoute": "GENERAL"
+  },
+  {
+    "id": "ROUTE-045",
+    "category": "GENERAL_COLLOQUIAL",
+    "authenticated": false,
+    "question": "ㅎㅇ 오늘도 잘 부탁한다",
+    "expectedRoute": "GENERAL"
+  },
+  {
+    "id": "ROUTE-046",
+    "category": "OUT_OF_SCOPE_WEATHER",
+    "authenticated": false,
+    "question": "오늘 서울 날씨 알려줘.",
+    "expectedRoute": "OUT_OF_SCOPE"
+  },
+  {
+    "id": "ROUTE-047",
+    "category": "OUT_OF_SCOPE_CODING",
+    "authenticated": true,
+    "question": "자바 스트림 사용법 설명해줘.",
+    "expectedRoute": "OUT_OF_SCOPE"
+  },
+  {
+    "id": "ROUTE-048",
+    "category": "OUT_OF_SCOPE_FINANCE",
+    "authenticated": false,
+    "question": "지금 살 만한 주식 추천해줘.",
+    "expectedRoute": "OUT_OF_SCOPE"
+  },
+  {
+    "id": "ROUTE-049",
+    "category": "OUT_OF_SCOPE_FOOD",
+    "authenticated": true,
+    "question": "저녁 메뉴 뭐 먹을까?",
+    "expectedRoute": "OUT_OF_SCOPE"
+  },
+  {
+    "id": "ROUTE-050",
+    "category": "OUT_OF_SCOPE_NOISY",
+    "authenticated": false,
+    "question": "비트코인낼오름?",
+    "expectedRoute": "OUT_OF_SCOPE"
+  }
+]

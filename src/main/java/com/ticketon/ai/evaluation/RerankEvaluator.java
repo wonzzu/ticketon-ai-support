@@ -91,6 +91,10 @@ public class RerankEvaluator {
                 .map(PolicySearchResponse::policyId)
                 .toList();
 
+        List<Double> baselineSimilarityScores = candidates.stream()
+                .map(PolicySearchResponse::similarityScore)
+                .toList();
+
         long startNanos = System.nanoTime();
         PolicyRerankResponse rerankResponse =
                 policyRerankService.rerank(rewrittenQuestion, candidates);
@@ -123,6 +127,7 @@ public class RerankEvaluator {
                 rewrittenQuestion,
                 evaluationCase.expectedPolicyIds(),
                 baselinePolicyIds,
+                baselineSimilarityScores,
                 rerankedPolicyIds,
                 baselineMatchedPolicyIds,
                 rerankedMatchedPolicyIds,

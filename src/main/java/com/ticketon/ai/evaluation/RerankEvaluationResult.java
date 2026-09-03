@@ -30,6 +30,7 @@ public record RerankEvaluationResult(
             String rewrittenQuestion,
             List<String> expectedPolicyIds,
             List<String> baselinePolicyIds,
+            List<Double> baselineSimilarityScores,
             List<String> rerankedPolicyIds,
             List<String> baselineMatchedPolicyIds,
             List<String> rerankedMatchedPolicyIds,
