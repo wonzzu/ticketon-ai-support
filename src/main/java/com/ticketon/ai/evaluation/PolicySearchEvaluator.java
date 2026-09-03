@@ -42,9 +42,8 @@ public class PolicySearchEvaluator {
         );
     }
 
-    private PolicySearchEvaluationResult.CaseResult evaluateCase(
-            PolicySearchEvaluationCase evaluationCase
-    ) {
+    private PolicySearchEvaluationResult.CaseResult evaluateCase(PolicySearchEvaluationCase evaluationCase) {
+
         List<String> retrievedPolicyIds = policySearchService.search(evaluationCase.question()).stream()
                 .map(PolicySearchResponse::policyId)
                 .toList();

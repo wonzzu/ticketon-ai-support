@@ -1,5 +1,6 @@
 package com.ticketon.ai.policy.evidence.service;
 
+import com.ticketon.ai.observation.AiStageObservation;
 import com.ticketon.ai.policy.context.dto.PolicyContext;
 import com.ticketon.ai.policy.evidence.domain.PolicyEvidenceSufficiency;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,19 @@ public class PolicyEvidenceSufficiencyService {
 
     private final ChatClient.Builder chatClientBuilder;
     private final PolicyEvidenceOutputParser outputParser;
+    private final AiStageObservation aiStageObservation;
 
     public PolicyEvidenceSufficiency evaluate(
+            String question,
+            PolicyContext context
+    ) {
+        return aiStageObservation.observe(
+                "evidence-gate",
+                () -> evaluateEvidence(question, context)
+        );
+    }
+
+    private PolicyEvidenceSufficiency evaluateEvidence(
             String question,
             PolicyContext context
     ) {

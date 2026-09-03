@@ -1,10 +1,12 @@
 package com.ticketon.ai.support.service;
 
 import com.ticketon.ai.auth.TicketOnAccessToken;
+import com.ticketon.ai.observation.AiStageObservation;
 import com.ticketon.ai.policy.tool.PolicySearchTool;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.tool.LoginRequiredTool;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,6 +34,8 @@ class SupportAnswerServiceTest {
     private final MyReservationTool myReservationTool = mock(MyReservationTool.class);
     private final RefundEstimateTool refundEstimateTool = mock(RefundEstimateTool.class);
     private final LoginRequiredTool loginRequiredTool = mock(LoginRequiredTool.class);
+    private final AiStageObservation aiStageObservation =
+            new AiStageObservation(ObservationRegistry.NOOP);
 
     private SupportAnswerService service;
 
@@ -49,6 +53,7 @@ class SupportAnswerServiceTest {
 
         service = new SupportAnswerService(
                 builder,
+                aiStageObservation,
                 policySearchTool,
                 myReservationTool,
                 refundEstimateTool,

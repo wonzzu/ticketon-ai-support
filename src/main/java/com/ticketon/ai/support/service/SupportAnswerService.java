@@ -1,6 +1,7 @@
 package com.ticketon.ai.support.service;
 
 import com.ticketon.ai.auth.TicketOnAccessToken;
+import com.ticketon.ai.observation.AiStageObservation;
 import com.ticketon.ai.policy.tool.PolicySearchTool;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
@@ -21,7 +22,8 @@ public class SupportAnswerService {
     private static final String SYSTEM_PROMPT = """
             당신은 TicketOn 고객지원 상담원입니다.
 
-            일반 정책, 이용 방법 또는 제한 조건이 필요한 질문에는 searchPolicies Tool을 사용하세요.
+            TicketOn 서비스의 정책, 이용 방법, 제한 조건 또는 오류 원인을 묻는 경우
+            기억으로 직접 답하지 말고 반드시 searchPolicies Tool을 먼저 사용하세요.
             searchPolicies Tool 결과의 sufficient가 false라면 정책을 추측하지 말고
             "제공된 정책만으로 확인할 수 없습니다."라고 안내하세요.
             sufficient가 true일 때만 반환된 policies를 근거로 답변하세요.
@@ -48,13 +50,28 @@ public class SupportAnswerService {
             가능 여부와 예상 결과만 설명하세요.
             """;
 
+    public static String systemPrompt() {
+        return SYSTEM_PROMPT;
+    }
+
     private final ChatClient.Builder chatClientBuilder;
+    private final AiStageObservation aiStageObservation;
     private final PolicySearchTool policySearchTool;
     private final MyReservationTool myReservationTool;
     private final RefundEstimateTool refundEstimateTool;
     private final LoginRequiredTool loginRequiredTool;
 
     public String answer(
+            String question,
+            Optional<TicketOnAccessToken> accessToken
+    ) {
+        return aiStageObservation.observe(
+                "support-answer",
+                () -> generateAnswer(question, accessToken)
+        );
+    }
+
+    private String generateAnswer(
             String question,
             Optional<TicketOnAccessToken> accessToken
     ) {

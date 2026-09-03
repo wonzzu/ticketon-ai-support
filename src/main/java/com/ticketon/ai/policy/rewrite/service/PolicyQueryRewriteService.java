@@ -1,5 +1,6 @@
 package com.ticketon.ai.policy.rewrite.service;
 
+import com.ticketon.ai.observation.AiStageObservation;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.stereotype.Service;
@@ -116,12 +117,24 @@ public class PolicyQueryRewriteService {
             """;
 
     private final ChatClient chatClient;
+    private final AiStageObservation aiStageObservation;
 
-    public PolicyQueryRewriteService(ChatClient.Builder chatClientBuilder) {
+    public PolicyQueryRewriteService(
+            ChatClient.Builder chatClientBuilder,
+            AiStageObservation aiStageObservation
+    ) {
         this.chatClient = chatClientBuilder.build();
+        this.aiStageObservation = aiStageObservation;
     }
 
     public String rewrite(String question) {
+        return aiStageObservation.observe(
+                "query-rewrite",
+                () -> rewriteQuestion(question)
+        );
+    }
+
+    private String rewriteQuestion(String question) {
         String rewrittenQuestion = chatClient.prompt()
                 .system(SYSTEM_PROMPT)
                 .user(question)

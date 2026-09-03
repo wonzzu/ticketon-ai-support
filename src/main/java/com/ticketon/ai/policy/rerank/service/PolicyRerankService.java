@@ -1,5 +1,6 @@
 package com.ticketon.ai.policy.rerank.service;
 
+import com.ticketon.ai.observation.AiStageObservation;
 import com.ticketon.ai.policy.rerank.dto.PolicyRerankResponse;
 import com.ticketon.ai.policy.search.dto.PolicySearchResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -42,16 +43,29 @@ public class PolicyRerankService {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final AiStageObservation aiStageObservation;
 
     public PolicyRerankService(
             ChatClient.Builder chatClientBuilder,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            AiStageObservation aiStageObservation
     ) {
         this.chatClient = chatClientBuilder.build();
         this.objectMapper = objectMapper;
+        this.aiStageObservation = aiStageObservation;
     }
 
     public PolicyRerankResponse rerank(
+            String question,
+            List<PolicySearchResponse> candidates
+    ) {
+        return aiStageObservation.observe(
+                "rerank",
+                () -> rerankCandidates(question, candidates)
+        );
+    }
+
+    private PolicyRerankResponse rerankCandidates(
             String question,
             List<PolicySearchResponse> candidates
     ) {
