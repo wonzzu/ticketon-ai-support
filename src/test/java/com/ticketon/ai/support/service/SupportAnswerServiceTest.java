@@ -2,21 +2,22 @@ package com.ticketon.ai.support.service;
 
 import com.ticketon.ai.auth.TicketOnAccessToken;
 import com.ticketon.ai.observation.AiStageObservation;
-import com.ticketon.ai.policy.tool.PolicySearchTool;
+import com.ticketon.ai.policy.answer.domain.PolicyAnswerGeneration;
+import com.ticketon.ai.policy.answer.dto.PolicyAnswerResponse;
+import com.ticketon.ai.policy.answer.service.PolicyAnswerService;
+import com.ticketon.ai.policy.context.dto.PolicyContext;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
-import com.ticketon.ai.support.tool.LoginRequiredTool;
+import com.ticketon.ai.support.domain.SupportRoute;
 import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.ai.chat.client.ChatClient;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,70 +25,76 @@ import static org.mockito.Mockito.when;
 
 class SupportAnswerServiceTest {
 
+    private final SupportRouteService routeService =
+            mock(SupportRouteService.class);
+    private final PolicyAnswerService policyAnswerService =
+            mock(PolicyAnswerService.class);
+    private final MyReservationTool myReservationTool =
+            mock(MyReservationTool.class);
+    private final RefundEstimateTool refundEstimateTool =
+            mock(RefundEstimateTool.class);
     private final ChatClient.Builder builder = mock(ChatClient.Builder.class);
-    private final ChatClient chatClient = mock(ChatClient.class);
-    private final ChatClient.ChatClientRequestSpec requestSpec =
-            mock(ChatClient.ChatClientRequestSpec.class);
-    private final ChatClient.CallResponseSpec responseSpec =
-            mock(ChatClient.CallResponseSpec.class);
-    private final PolicySearchTool policySearchTool = mock(PolicySearchTool.class);
-    private final MyReservationTool myReservationTool = mock(MyReservationTool.class);
-    private final RefundEstimateTool refundEstimateTool = mock(RefundEstimateTool.class);
-    private final LoginRequiredTool loginRequiredTool = mock(LoginRequiredTool.class);
-    private final AiStageObservation aiStageObservation =
+    private final AiStageObservation observation =
             new AiStageObservation(ObservationRegistry.NOOP);
 
     private SupportAnswerService service;
 
     @BeforeEach
     void setUp() {
-        when(builder.build()).thenReturn(chatClient);
-        when(chatClient.prompt()).thenReturn(requestSpec);
-        when(requestSpec.system(any(String.class))).thenReturn(requestSpec);
-        when(requestSpec.user(any(String.class))).thenReturn(requestSpec);
-        when(requestSpec.tools(any(Object[].class))).thenReturn(requestSpec);
-        when(requestSpec.toolContext(any())).thenReturn(requestSpec);
-        when(requestSpec.options(any())).thenReturn(requestSpec);
-        when(requestSpec.call()).thenReturn(responseSpec);
-        when(responseSpec.content()).thenReturn("고객지원 답변");
-
         service = new SupportAnswerService(
-                builder,
-                aiStageObservation,
-                policySearchTool,
+                routeService,
+                policyAnswerService,
                 myReservationTool,
                 refundEstimateTool,
-                loginRequiredTool
+                builder,
+                observation
         );
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void JWT가_없으면_정책_Tool만_제공한다() {
-        String result = service.answer("취소 정책 알려줘.", Optional.empty());
+    void 정책_경로는_기존_RAG를_호출한다() {
+        String question = "좌석은 몇 분 유지돼요?";
+        PolicyAnswerResponse response = new PolicyAnswerResponse(
+                "좌석은 7분 동안 유지됩니다.",
+                List.of(),
+                false
+        );
+        when(routeService.route(question)).thenReturn(SupportRoute.POLICY);
+        when(policyAnswerService.answer(question)).thenReturn(response);
 
-        verify(requestSpec).tools(policySearchTool, loginRequiredTool);
-        verify(requestSpec, never()).toolContext(any());
-        assertThat(result).isEqualTo("고객지원 답변");
+        String answer = service.answer(question, Optional.empty());
+
+        assertThat(answer).isEqualTo(response.answer());
+        verify(policyAnswerService).answer(question);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void JWT가_있으면_LLM_문장이_아니라_ToolContext에만_전달한다() {
-        TicketOnAccessToken token = new TicketOnAccessToken("secret-user-token");
+    void 개인_데이터에_JWT가_없으면_Tool을_호출하지_않는다() {
+        String question = "내 예매 보여줘.";
+        when(routeService.route(question)).thenReturn(SupportRoute.PERSONAL_DATA);
 
-        service.answer("내 예매 보여줘.", Optional.of(token));
+        String answer = service.answer(question, Optional.empty());
 
-        ArgumentCaptor<Map<String, Object>> contextCaptor =
-                ArgumentCaptor.forClass(Map.class);
-        verify(requestSpec).user("내 예매 보여줘.");
-        verify(requestSpec).tools(
-                policySearchTool,
-                myReservationTool,
-                refundEstimateTool
+        assertThat(answer).contains("로그인");
+        verify(myReservationTool, never()).getMyReservations(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void 변경_요청은_Tool을_호출하지_않는다() {
+        String question = "내 예매를 취소해줘.";
+        when(routeService.route(question))
+                .thenReturn(SupportRoute.UNSUPPORTED_WRITE);
+
+        String answer = service.answer(
+                question,
+                Optional.of(new TicketOnAccessToken("token"))
         );
-        verify(requestSpec).toolContext(contextCaptor.capture());
-        assertThat(contextCaptor.getValue())
-                .containsEntry(MyReservationTool.ACCESS_TOKEN_CONTEXT_KEY, token);
+
+        assertThat(answer).contains("수행할 수 없습니다");
+        verify(myReservationTool, never()).getMyReservations(org.mockito.ArgumentMatchers.any());
+        verify(refundEstimateTool, never()).estimateRefund(
+                org.mockito.ArgumentMatchers.anyLong(),
+                org.mockito.ArgumentMatchers.any()
+        );
     }
 }
