@@ -6,6 +6,7 @@ import com.ticketon.ai.policy.answer.service.PolicyAnswerService;
 import com.ticketon.ai.refund.RefundEstimate;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.dto.MyReservationSummary;
+import com.ticketon.ai.reservation.service.ReservationSelectionService;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.domain.SupportRoute;
 import com.ticketon.ai.tool.result.ToolFailureCode;
@@ -32,6 +33,24 @@ public class SupportAnswerService {
             "TicketOn 이용, 예매, 결제, 취소 및 환불 관련 질문을 도와드릴 수 있습니다.";
     private static final String EMPTY_RESERVATIONS_MESSAGE =
             "현재 확인할 수 있는 예매가 없습니다.";
+    private static final String CONFIRMED_STATUS = "CONFIRMED";
+    private static final String PENDING_STATUS = "PENDING";
+    private static final String PENDING_REFUND_MESSAGE =
+            "결제 완료된 예매가 없습니다. 결제 대기 예매는 환불액 계산 대상이 아닙니다.";
+    private static final String CANCELED_REFUND_MESSAGE =
+            "결제 완료된 예매가 없습니다. 이미 취소된 예매는 환불액 계산 대상이 아닙니다.";
+    private static final List<String> PENDING_QUESTION_TERMS = List.of(
+            "결제 대기",
+            "결제 전",
+            "결제하지 않은",
+            "결제 안 한",
+            "결제 안한"
+    );
+    private static final List<String> CANCELED_QUESTION_TERMS = List.of(
+            "이미 취소",
+            "취소된",
+            "취소한 예매"
+    );
 
     private static final String DATA_ANSWER_PROMPT = """
             당신은 TicketOn 고객지원 상담원입니다.
@@ -49,6 +68,7 @@ public class SupportAnswerService {
     private final PolicyAnswerService policyAnswerService;
     private final MyReservationTool myReservationTool;
     private final RefundEstimateTool refundEstimateTool;
+    private final ReservationSelectionService reservationSelectionService;
     private final ChatClient.Builder chatClientBuilder;
     private final AiStageObservation aiStageObservation;
 
@@ -98,7 +118,6 @@ public class SupportAnswerService {
         if (reservations.isEmpty()) {
             return EMPTY_RESERVATIONS_MESSAGE;
         }
-
         return generateDataAnswer(
                 question,
                 reservationContext(reservations)
@@ -126,12 +145,32 @@ public class SupportAnswerService {
         if (reservations.isEmpty()) {
             return EMPTY_RESERVATIONS_MESSAGE;
         }
-        if (reservations.size() > 1) {
-            return reservationSelectionMessage(reservations);
+        if (asksForStatus(question, PENDING_QUESTION_TERMS)
+                && hasReservationStatus(reservations, PENDING_STATUS)) {
+            return PENDING_REFUND_MESSAGE;
+        }
+        if (asksForStatus(question, CANCELED_QUESTION_TERMS)
+                && hasReservationStatus(reservations, "CANCEL")) {
+            return CANCELED_REFUND_MESSAGE;
+        }
+
+        List<MyReservationSummary> confirmedReservations = reservations.stream()
+                .filter(reservation -> CONFIRMED_STATUS.equals(
+                        reservation.reservationStatus()
+                ))
+                .toList();
+        if (confirmedReservations.isEmpty()) {
+            return noRefundableReservationMessage(reservations);
+        }
+
+        Optional<MyReservationSummary> selectedReservation =
+                reservationSelectionService.select(question, confirmedReservations);
+        if (selectedReservation.isEmpty()) {
+            return reservationSelectionMessage(confirmedReservations);
         }
 
         ToolResult<RefundEstimate> refundResult = refundEstimateTool.estimateRefund(
-                reservations.getFirst().reservationId(),
+                selectedReservation.get().reservationId(),
                 context
         );
         if (refundResult instanceof ToolResult.Failure<RefundEstimate> failure) {
@@ -187,13 +226,51 @@ public class SupportAnswerService {
     private String reservationSelectionMessage(
             List<MyReservationSummary> reservations
     ) {
-        String eventTitles = reservations.stream()
-                .map(MyReservationSummary::eventTitle)
-                .distinct()
-                .reduce((left, right) -> left + ", " + right)
-                .orElse("");
+        StringBuilder message = new StringBuilder(
+                "환불액을 계산할 예매를 특정할 수 없습니다.\n\n"
+        );
 
-        return "환불액을 계산할 공연을 알려주세요: " + eventTitles;
+        for (int index = 0; index < reservations.size(); index++) {
+            MyReservationSummary reservation = reservations.get(index);
+            message.append("%d. %s / %s / %s%n".formatted(
+                    index + 1,
+                    reservation.eventTitle(),
+                    reservation.performanceAt(),
+                    reservation.reservationStatus()
+            ));
+        }
+
+        message.append("\n공연명이나 공연일을 포함해서 다시 알려주세요.");
+
+        return message.toString();
+    }
+
+    private String noRefundableReservationMessage(
+            List<MyReservationSummary> reservations
+    ) {
+        boolean hasPendingReservation = reservations.stream()
+                .anyMatch(reservation -> PENDING_STATUS.equals(
+                        reservation.reservationStatus()
+                ));
+        if (hasPendingReservation) {
+            return PENDING_REFUND_MESSAGE;
+        }
+
+        return CANCELED_REFUND_MESSAGE;
+    }
+
+    private boolean asksForStatus(String question, List<String> statusTerms) {
+        return statusTerms.stream().anyMatch(question::contains);
+    }
+
+    private boolean hasReservationStatus(
+            List<MyReservationSummary> reservations,
+            String status
+    ) {
+        return reservations.stream()
+                .anyMatch(reservation -> status.equals(
+                        reservation.reservationStatus()
+                ));
     }
 
     private String generateDataAnswer(String question, String data) {
