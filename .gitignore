@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.gradle-user-home/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -42,8 +43,18 @@ out/
 !.env.example
 application-local.properties
 application-local.yml
+application-local.yaml
 application-*.local.properties
 application-*.local.yml
+application-*.local.yaml
+
+# Runtime logs
+*.log
+logs/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
 
 # Local Codex instructions
 /AGENTS.md

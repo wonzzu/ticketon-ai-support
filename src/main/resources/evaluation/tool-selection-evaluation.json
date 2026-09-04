@@ -130,7 +130,7 @@
     "category": "LOGIN_MULTIPLE",
     "authenticated": false,
     "question": "내 예매 중에 아직 취소 가능한 것만 알려줘.",
-    "expectedRoute": "PERSONAL_DATA"
+    "expectedRoute": "REFUND_CALCULATION"
   },
   {
     "id": "ROUTE-020",
@@ -193,7 +193,7 @@
     "category": "PERSONAL_AMBIGUOUS",
     "authenticated": true,
     "question": "내 예매 두 개 중 아직 취소 가능한 게 어떤 거야?",
-    "expectedRoute": "PERSONAL_DATA"
+    "expectedRoute": "REFUND_CALCULATION"
   },
   {
     "id": "ROUTE-029",
