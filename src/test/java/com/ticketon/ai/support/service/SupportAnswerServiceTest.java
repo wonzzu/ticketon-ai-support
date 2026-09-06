@@ -8,6 +8,7 @@ import com.ticketon.ai.policy.answer.service.PolicyAnswerService;
 import com.ticketon.ai.policy.context.dto.PolicyContext;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.dto.MyReservationSummary;
+import com.ticketon.ai.reservation.dto.ReservationSelectionResult;
 import com.ticketon.ai.reservation.service.ReservationSelectionService;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.domain.SupportRoute;
@@ -107,6 +108,17 @@ class SupportAnswerServiceTest {
     }
 
     @Test
+    void 일반_대화는_LLM을_거치지_않고_한국어로_답변한다() {
+        String question = "도와줘서 고마워.";
+        when(routeService.route(question)).thenReturn(SupportRoute.GENERAL);
+
+        String answer = service.answer(question, Optional.empty());
+
+        assertThat(answer).contains("감사합니다");
+        verify(builder, never()).build();
+    }
+
+    @Test
     void 여러_예매_중_선택된_예매만_환불액을_계산한다() {
         String question = "내 최근 예매를 취소하면 환불액이 얼마야?";
         TicketOnAccessToken accessToken = new TicketOnAccessToken("access-token");
@@ -118,8 +130,11 @@ class SupportAnswerServiceTest {
                 .thenReturn(SupportRoute.REFUND_CALCULATION);
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(reservations));
-        when(reservationSelectionService.select(question, reservations))
-                .thenReturn(Optional.of(selected));
+        when(reservationSelectionService.find(question, reservations))
+                .thenReturn(new ReservationSelectionResult(
+                        List.of(selected),
+                        true
+                ));
         when(refundEstimateTool.estimateRefund(
                 org.mockito.ArgumentMatchers.eq(22L),
                 org.mockito.ArgumentMatchers.any()
@@ -154,7 +169,7 @@ class SupportAnswerServiceTest {
         );
 
         assertThat(answer).contains("결제 대기");
-        verify(reservationSelectionService, never()).select(
+        verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
         );
@@ -181,7 +196,7 @@ class SupportAnswerServiceTest {
         );
 
         assertThat(answer).contains("결제 대기");
-        verify(reservationSelectionService, never()).select(
+        verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
         );
@@ -208,7 +223,7 @@ class SupportAnswerServiceTest {
         );
 
         assertThat(answer).contains("이미 취소");
-        verify(reservationSelectionService, never()).select(
+        verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
         );
@@ -229,8 +244,11 @@ class SupportAnswerServiceTest {
                 .thenReturn(SupportRoute.REFUND_CALCULATION);
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(List.of(pending, confirmed, canceled)));
-        when(reservationSelectionService.select(question, List.of(confirmed)))
-                .thenReturn(Optional.of(confirmed));
+        when(reservationSelectionService.find(question, List.of(confirmed)))
+                .thenReturn(new ReservationSelectionResult(
+                        List.of(confirmed),
+                        false
+                ));
         when(refundEstimateTool.estimateRefund(
                 org.mockito.ArgumentMatchers.eq(22L),
                 org.mockito.ArgumentMatchers.any()
@@ -241,7 +259,7 @@ class SupportAnswerServiceTest {
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        verify(reservationSelectionService).select(question, List.of(confirmed));
+        verify(reservationSelectionService).find(question, List.of(confirmed));
         verify(refundEstimateTool).estimateRefund(
                 org.mockito.ArgumentMatchers.eq(22L),
                 org.mockito.ArgumentMatchers.any()
@@ -259,8 +277,11 @@ class SupportAnswerServiceTest {
                 .thenReturn(SupportRoute.REFUND_CALCULATION);
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(reservations));
-        when(reservationSelectionService.select(question, reservations))
-                .thenReturn(Optional.empty());
+        when(reservationSelectionService.find(question, reservations))
+                .thenReturn(new ReservationSelectionResult(
+                        reservations,
+                        false
+                ));
 
         String answer = service.answer(
                 question,
@@ -276,6 +297,27 @@ class SupportAnswerServiceTest {
                 org.mockito.ArgumentMatchers.anyLong(),
                 org.mockito.ArgumentMatchers.any()
         );
+    }
+
+    @Test
+    void 조건에_맞는_개인_예매가_없으면_LLM이_추측하지_않는다() {
+        String question = "이번 주 내 공연 보여줘.";
+        List<MyReservationSummary> reservations = List.of(
+                reservation(11L, "지난 공연", "CONFIRMED")
+        );
+
+        when(routeService.route(question)).thenReturn(SupportRoute.PERSONAL_DATA);
+        when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
+                .thenReturn(ToolResult.success(reservations));
+        when(reservationSelectionService.find(question, reservations))
+                .thenReturn(new ReservationSelectionResult(List.of(), true));
+
+        String answer = service.answer(
+                question,
+                Optional.of(new TicketOnAccessToken("access-token"))
+        );
+
+        assertThat(answer).contains("조건에 맞는 예매").contains("없습니다");
     }
 
     private MyReservationSummary reservation(Long reservationId, String eventTitle) {

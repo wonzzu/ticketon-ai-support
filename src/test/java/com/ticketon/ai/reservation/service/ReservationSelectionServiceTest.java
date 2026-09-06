@@ -1,9 +1,10 @@
 package com.ticketon.ai.reservation.service;
 
 import com.ticketon.ai.reservation.dto.MyReservationSummary;
-import com.ticketon.ai.reservation.dto.ReservationSelection;
+import com.ticketon.ai.reservation.dto.ReservationSelectionCriteria;
 import org.junit.jupiter.api.Test;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,87 +12,110 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationSelectionServiceTest {
 
-    private final List<MyReservationSummary> reservations = List.of(
-            reservation(11L, "첫 번째 공연"),
-            reservation(22L, "두 번째 공연")
-    );
+    private static final LocalDateTime NOW =
+            LocalDateTime.of(2026, 9, 4, 12, 0);
 
     @Test
-    void 정상적인_후보_번호에_해당하는_예매를_선택한다() {
-        ReservationSelection selection = new ReservationSelection(2);
-
-        assertThat(ReservationSelectionService.resolve(selection, reservations))
-                .contains(reservations.get(1));
-    }
-
-    @Test
-    void 선택이_불명확하면_예매를_선택하지_않는다() {
-        ReservationSelection selection = new ReservationSelection(null);
-
-        assertThat(ReservationSelectionService.resolve(selection, reservations))
-                .isEmpty();
-    }
-
-    @Test
-    void 후보_범위를_벗어난_번호는_거부한다() {
-        ReservationSelection selection = new ReservationSelection(3);
-
-        assertThat(ReservationSelectionService.resolve(selection, reservations))
-                .isEmpty();
-    }
-
-    @Test
-    void 후보_번호가_없으면_예매를_선택하지_않는다() {
-        ReservationSelection selection = new ReservationSelection(null);
-
-        assertThat(ReservationSelectionService.resolve(selection, reservations))
-                .isEmpty();
-    }
-
-    @Test
-    void 후보를_구분할_단서가_없는_질문은_선택하지_않는다() {
-        assertThat(ReservationSelectionService.hasSelectionCondition(
-                "내 표 하나 취소하면 얼마 받아?",
-                reservations
-        )).isFalse();
-    }
-
-    @Test
-    void 최근이라는_시간_조건이_있으면_선택을_시도할_수_있다() {
-        assertThat(ReservationSelectionService.hasSelectionCondition(
-                "내 가장 최근 예매를 취소하면 얼마 받아?",
-                reservations
-        )).isTrue();
-    }
-
-    @Test
-    void 하나의_후보에만_해당하는_공연명이_있으면_선택을_시도할_수_있다() {
-        assertThat(ReservationSelectionService.hasSelectionCondition(
-                "두 번째 공연을 취소하면 얼마 받아?",
-                reservations
-        )).isTrue();
-    }
-
-    @Test
-    void 같은_공연명만으로_여러_후보를_구분할_수_없다() {
-        List<MyReservationSummary> sameTitleReservations = List.of(
-                reservation(11L, "같은 공연"),
-                reservation(22L, "같은 공연")
+    void 이번_주_공연만_선택한다() {
+        List<MyReservationSummary> reservations = List.of(
+                reservation(11L, "이번 주 공연", "2026-09-05T19:00", "2026-08-01T10:00"),
+                reservation(22L, "다음 주 공연", "2026-09-07T19:00", "2026-08-02T10:00")
         );
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionCriteria.thisWeek();
 
-        assertThat(ReservationSelectionService.hasSelectionCondition(
-                "같은 공연을 취소하면 얼마 받아?",
-                sameTitleReservations
-        )).isFalse();
+        List<MyReservationSummary> selected =
+                ReservationSelectionService.apply(criteria, reservations, NOW);
+
+        assertThat(selected).containsExactly(reservations.getFirst());
     }
 
-    private MyReservationSummary reservation(Long reservationId, String eventTitle) {
+    @Test
+    void 가장_가까운_미래_공연을_선택한다() {
+        List<MyReservationSummary> reservations = List.of(
+                reservation(11L, "지난 공연", "2026-09-01T19:00", "2026-08-01T10:00"),
+                reservation(22L, "가까운 공연", "2026-09-05T19:00", "2026-08-02T10:00"),
+                reservation(33L, "먼 공연", "2026-09-20T19:00", "2026-08-03T10:00")
+        );
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionCriteria.nearestUpcoming();
+
+        List<MyReservationSummary> selected =
+                ReservationSelectionService.apply(criteria, reservations, NOW);
+
+        assertThat(selected).containsExactly(reservations.get(1));
+    }
+
+    @Test
+    void 지정한_요일의_공연만_선택한다() {
+        List<MyReservationSummary> reservations = List.of(
+                reservation(11L, "토요일 공연", "2026-09-05T19:00", "2026-08-01T10:00"),
+                reservation(22L, "일요일 공연", "2026-09-06T19:00", "2026-08-02T10:00")
+        );
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionCriteria.dayOfWeek(DayOfWeek.SATURDAY);
+
+        List<MyReservationSummary> selected =
+                ReservationSelectionService.apply(criteria, reservations, NOW);
+
+        assertThat(selected).containsExactly(reservations.getFirst());
+    }
+
+    @Test
+    void 방금_산_티켓은_예매_일시가_가장_최근인_예매를_선택한다() {
+        List<MyReservationSummary> reservations = List.of(
+                reservation(11L, "이전 예매", "2026-09-20T19:00", "2026-08-01T10:00"),
+                reservation(22L, "최근 예매", "2026-09-10T19:00", "2026-09-04T11:50")
+        );
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionCriteria.latestReservation();
+
+        List<MyReservationSummary> selected =
+                ReservationSelectionService.apply(criteria, reservations, NOW);
+
+        assertThat(selected).containsExactly(reservations.get(1));
+    }
+
+    @Test
+    void 토요일은_LLM을_거치지_않고_요일_조건으로_변환한다() {
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionService.knownCriteria(
+                        "토요일에 보는 공연 취소하면 얼마야?",
+                        List.of()
+                ).orElseThrow();
+
+        assertThat(criteria.dayOfWeek()).isEqualTo(DayOfWeek.SATURDAY);
+        assertThat(criteria.futureOnly()).isFalse();
+    }
+
+    @Test
+    void 방금_산_티켓은_LLM을_거치지_않고_최근_예매_조건으로_변환한다() {
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionService.knownCriteria(
+                        "방금 산 티켓이 결제 완료인지 확인해줘.",
+                        List.of()
+                ).orElseThrow();
+
+        assertThat(criteria.sortField())
+                .isEqualTo(ReservationSelectionCriteria.SortField.RESERVED_AT);
+        assertThat(criteria.sortDirection())
+                .isEqualTo(ReservationSelectionCriteria.SortDirection.DESC);
+        assertThat(criteria.firstOnly()).isTrue();
+        assertThat(criteria.reservationStatus()).isNull();
+    }
+
+    private MyReservationSummary reservation(
+            Long reservationId,
+            String eventTitle,
+            String performanceAt,
+            String reservedAt
+    ) {
         return new MyReservationSummary(
                 reservationId,
                 eventTitle,
-                LocalDateTime.of(2026, 9, 20, 19, 0),
+                LocalDateTime.parse(performanceAt),
                 "CONFIRMED",
-                LocalDateTime.of(2026, 8, 20, 12, 0)
+                LocalDateTime.parse(reservedAt)
         );
     }
 }
