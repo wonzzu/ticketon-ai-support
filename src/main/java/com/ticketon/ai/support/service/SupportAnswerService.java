@@ -6,6 +6,7 @@ import com.ticketon.ai.policy.answer.service.PolicyAnswerService;
 import com.ticketon.ai.refund.RefundEstimate;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
 import com.ticketon.ai.reservation.dto.MyReservationSummary;
+import com.ticketon.ai.reservation.dto.ReservationSelectionResult;
 import com.ticketon.ai.reservation.service.ReservationSelectionService;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.domain.SupportRoute;
@@ -33,12 +34,16 @@ public class SupportAnswerService {
             "TicketOn 이용, 예매, 결제, 취소 및 환불 관련 질문을 도와드릴 수 있습니다.";
     private static final String EMPTY_RESERVATIONS_MESSAGE =
             "현재 확인할 수 있는 예매가 없습니다.";
+    private static final String NO_MATCHING_RESERVATIONS_MESSAGE =
+            "질문의 조건에 맞는 예매가 없습니다.";
     private static final String CONFIRMED_STATUS = "CONFIRMED";
     private static final String PENDING_STATUS = "PENDING";
     private static final String PENDING_REFUND_MESSAGE =
             "결제 완료된 예매가 없습니다. 결제 대기 예매는 환불액 계산 대상이 아닙니다.";
     private static final String CANCELED_REFUND_MESSAGE =
             "결제 완료된 예매가 없습니다. 이미 취소된 예매는 환불액 계산 대상이 아닙니다.";
+    private static final String GENERAL_MESSAGE =
+            "감사합니다. TicketOn 이용과 관련해 궁금한 점이 있으면 언제든지 말씀해 주세요.";
     private static final List<String> PENDING_QUESTION_TERMS = List.of(
             "결제 대기",
             "결제 전",
@@ -57,11 +62,9 @@ public class SupportAnswerService {
             제공된 조회 또는 계산 결과만 사용해 질문에 간결한 한국어로 답변하세요.
             결과에 없는 내용은 추측하지 마세요.
             내부 예매 식별자는 사용자에게 노출하지 마세요.
-            """;
-
-    private static final String GENERAL_PROMPT = """
-            당신은 TicketOn 고객지원 상담원입니다.
-            인사나 감사에 한두 문장으로 친절하고 간결하게 답변하세요.
+            모든 사용자에게 보여주는 답변은 자연스러운 한국어로 작성하세요.
+            사용자가 한국어로 질문한 경우 영어, 일본어 등 다른 언어의 문장이나 표현을 섞지 마세요.
+            공연명, 상품명, 고유명사처럼 원문을 유지해야 하는 경우에만 외국어 표기를 유지하세요.
             """;
 
     private final SupportRouteService supportRouteService;
@@ -93,7 +96,7 @@ public class SupportAnswerService {
             case PERSONAL_DATA -> answerPersonalData(question, accessToken);
             case REFUND_CALCULATION -> answerRefund(question, accessToken);
             case UNSUPPORTED_WRITE -> UNSUPPORTED_WRITE_MESSAGE;
-            case GENERAL -> generateGeneralAnswer(question);
+            case GENERAL -> GENERAL_MESSAGE;
             case OUT_OF_SCOPE -> OUT_OF_SCOPE_MESSAGE;
         };
     }
@@ -118,9 +121,16 @@ public class SupportAnswerService {
         if (reservations.isEmpty()) {
             return EMPTY_RESERVATIONS_MESSAGE;
         }
+
+        ReservationSelectionResult selection =
+                reservationSelectionService.find(question, reservations);
+        if (selection.criteriaApplied() && selection.reservations().isEmpty()) {
+            return NO_MATCHING_RESERVATIONS_MESSAGE;
+        }
+
         return generateDataAnswer(
                 question,
-                reservationContext(reservations)
+                reservationContext(selection.reservations())
         );
     }
 
@@ -163,14 +173,17 @@ public class SupportAnswerService {
             return noRefundableReservationMessage(reservations);
         }
 
-        Optional<MyReservationSummary> selectedReservation =
-                reservationSelectionService.select(question, confirmedReservations);
-        if (selectedReservation.isEmpty()) {
-            return reservationSelectionMessage(confirmedReservations);
+        ReservationSelectionResult selection =
+                reservationSelectionService.find(question, confirmedReservations);
+        if (selection.criteriaApplied() && selection.reservations().isEmpty()) {
+            return NO_MATCHING_RESERVATIONS_MESSAGE;
+        }
+        if (selection.reservations().size() != 1) {
+            return reservationSelectionMessage(selection.reservations());
         }
 
         ToolResult<RefundEstimate> refundResult = refundEstimateTool.estimateRefund(
-                selectedReservation.get().reservationId(),
+                selection.reservations().getFirst().reservationId(),
                 context
         );
         if (refundResult instanceof ToolResult.Failure<RefundEstimate> failure) {
@@ -289,13 +302,4 @@ public class SupportAnswerService {
                 .content();
     }
 
-    private String generateGeneralAnswer(String question) {
-        return chatClientBuilder.build()
-                .prompt()
-                .system(GENERAL_PROMPT)
-                .user(question)
-                .options(OllamaChatOptions.builder().disableThinking())
-                .call()
-                .content();
-    }
 }
