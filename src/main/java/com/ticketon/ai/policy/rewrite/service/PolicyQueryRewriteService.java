@@ -139,7 +139,8 @@ public class PolicyQueryRewriteService {
                 .system(SYSTEM_PROMPT)
                 .user(question)
                 .options(OllamaChatOptions.builder()
-                        .disableThinking())
+                        .disableThinking()
+                        .temperature(0.0))
                 .call()
                 .content();
 

@@ -18,6 +18,8 @@ import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,14 +38,20 @@ public class SupportAnswerService {
             "현재 확인할 수 있는 예매가 없습니다.";
     private static final String NO_MATCHING_RESERVATIONS_MESSAGE =
             "질문의 조건에 맞는 예매가 없습니다.";
+    private static final String NO_CANCELLABLE_RESERVATIONS_MESSAGE =
+            "현재 취소 가능한 예매가 없습니다.";
     private static final String CONFIRMED_STATUS = "CONFIRMED";
     private static final String PENDING_STATUS = "PENDING";
     private static final String PENDING_REFUND_MESSAGE =
             "결제 완료된 예매가 없습니다. 결제 대기 예매는 환불액 계산 대상이 아닙니다.";
     private static final String CANCELED_REFUND_MESSAGE =
             "결제 완료된 예매가 없습니다. 이미 취소된 예매는 환불액 계산 대상이 아닙니다.";
-    private static final String GENERAL_MESSAGE =
-            "감사합니다. TicketOn 이용과 관련해 궁금한 점이 있으면 언제든지 말씀해 주세요.";
+    private static final String GENERAL_ANSWER_PROMPT = """
+            당신은 TicketOn 고객지원 상담원입니다.
+            사용자의 일반적인 대화에 자연스럽고 간결한 한국어로 답변하세요.
+            사용자가 한국어로 질문한 경우 다른 언어를 섞지 마세요.
+            TicketOn에 없는 기능이나 정책을 지어내지 마세요.
+            """;
     private static final List<String> PENDING_QUESTION_TERMS = List.of(
             "결제 대기",
             "결제 전",
@@ -74,6 +82,7 @@ public class SupportAnswerService {
     private final ReservationSelectionService reservationSelectionService;
     private final ChatClient.Builder chatClientBuilder;
     private final AiStageObservation aiStageObservation;
+    private final Clock clock;
 
     public String answer(
             String question,
@@ -96,7 +105,7 @@ public class SupportAnswerService {
             case PERSONAL_DATA -> answerPersonalData(question, accessToken);
             case REFUND_CALCULATION -> answerRefund(question, accessToken);
             case UNSUPPORTED_WRITE -> UNSUPPORTED_WRITE_MESSAGE;
-            case GENERAL -> GENERAL_MESSAGE;
+            case GENERAL -> generateGeneralAnswer(question);
             case OUT_OF_SCOPE -> OUT_OF_SCOPE_MESSAGE;
         };
     }
@@ -164,22 +173,24 @@ public class SupportAnswerService {
             return CANCELED_REFUND_MESSAGE;
         }
 
-        List<MyReservationSummary> confirmedReservations = reservations.stream()
+        LocalDate today = LocalDate.now(clock);
+        List<MyReservationSummary> cancellableReservations = reservations.stream()
                 .filter(reservation -> CONFIRMED_STATUS.equals(
                         reservation.reservationStatus()
                 ))
+                .filter(reservation -> reservation.performanceAt()
+                        .toLocalDate()
+                        .isAfter(today))
                 .toList();
-        if (confirmedReservations.isEmpty()) {
-            return noRefundableReservationMessage(reservations);
+        if (cancellableReservations.isEmpty()) {
+            return NO_CANCELLABLE_RESERVATIONS_MESSAGE;
         }
 
         ReservationSelectionResult selection =
-                reservationSelectionService.find(question, confirmedReservations);
-        if (selection.criteriaApplied() && selection.reservations().isEmpty()) {
-            return NO_MATCHING_RESERVATIONS_MESSAGE;
-        }
-        if (selection.reservations().size() != 1) {
-            return reservationSelectionMessage(selection.reservations());
+                reservationSelectionService.find(question, cancellableReservations);
+        if (!selection.criteriaApplied()
+                || selection.reservations().size() != 1) {
+            return reservationSelectionMessage(cancellableReservations);
         }
 
         ToolResult<RefundEstimate> refundResult = refundEstimateTool.estimateRefund(
@@ -297,6 +308,18 @@ public class SupportAnswerService {
                         [확인된 결과]
                         %s
                         """.formatted(question, data))
+                .options(OllamaChatOptions.builder()
+                        .disableThinking()
+                        .temperature(0.0))
+                .call()
+                .content();
+    }
+
+    private String generateGeneralAnswer(String question) {
+        return chatClientBuilder.build()
+                .prompt()
+                .system(GENERAL_ANSWER_PROMPT)
+                .user(question)
                 .options(OllamaChatOptions.builder().disableThinking())
                 .call()
                 .content();
