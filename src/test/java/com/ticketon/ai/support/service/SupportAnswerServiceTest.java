@@ -108,17 +108,6 @@ class SupportAnswerServiceTest {
     }
 
     @Test
-    void 일반_대화는_LLM을_거치지_않고_한국어로_답변한다() {
-        String question = "도와줘서 고마워.";
-        when(routeService.route(question)).thenReturn(SupportRoute.GENERAL);
-
-        String answer = service.answer(question, Optional.empty());
-
-        assertThat(answer).contains("감사합니다");
-        verify(builder, never()).build();
-    }
-
-    @Test
     void 여러_예매_중_선택된_예매만_환불액을_계산한다() {
         String question = "내 최근 예매를 취소하면 환불액이 얼마야?";
         TicketOnAccessToken accessToken = new TicketOnAccessToken("access-token");

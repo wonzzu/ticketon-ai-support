@@ -24,28 +24,13 @@ import java.util.regex.Pattern;
 public class ReservationSelectionService {
 
     private static final List<String> SELECTION_TERMS = List.of(
-            "최근",
-            "마지막",
-            "방금",
-            "가까운",
-            "다가오는",
-            "다음",
-            "이번 주",
-            "이번주",
-            "처음",
-            "오래된",
-            "결제 완료",
-            "결제 대기",
-            "취소된"
+            "최근", "마지막", "방금", "가까운", "다가오는", "다음",
+            "이번 주", "이번주", "처음", "오래된", "결제 완료",
+            "결제 대기", "취소된"
     );
     private static final List<String> DAY_OF_WEEK_TERMS = List.of(
-            "월요일",
-            "화요일",
-            "수요일",
-            "목요일",
-            "금요일",
-            "토요일",
-            "일요일"
+            "월요일", "화요일", "수요일", "목요일",
+            "금요일", "토요일", "일요일"
     );
     private static final Pattern DATE_PATTERN = Pattern.compile(
             "(?:\\d{4}[-./]\\d{1,2}[-./]\\d{1,2})|"
@@ -53,10 +38,17 @@ public class ReservationSelectionService {
     );
 
     private static final String SELECTION_PROMPT = """
-            사용자의 질문에서 예매 후보를 찾는 조건만 구조화하세요.
-            예매 후보를 직접 선택하거나 날짜를 직접 계산하지 마세요.
+            사용자의 질문에 직접 표현된 예매 선택 조건만 구조화하세요.
+            예매 후보를 선택하거나 날짜를 직접 계산하지 마세요.
 
             규칙:
+            - 질문에 없는 공연명, 날짜, 상태를 추측하거나 생성하지 마세요.
+            - 공연명은 사용자가 작성한 표현 그대로 반환하세요.
+            - 후보 번호나 예매 식별자를 만들지 마세요.
+            - 선택 조건이 없으면 선택 필드는 null, boolean 필드는 false로 반환하세요.
+            - "내 예매", "내 표", "예매 하나", "공연", "티켓"은 공연명이 아닙니다.
+            - "취소하면", "환불하면"은 원하는 행동이며 CANCEL 상태가 아닙니다.
+            - 이미 취소된 예매라고 명시한 경우에만 reservationStatus를 CANCEL로 반환하세요.
             - 이번 주는 period를 THIS_WEEK로 반환하세요.
             - 요일이 있으면 dayOfWeek를 반환하세요.
             - 가장 가까운, 다가오는, 다음 공연은 futureOnly=true,
@@ -68,8 +60,10 @@ public class ReservationSelectionService {
             - 결제 완료는 reservationStatus=CONFIRMED,
               결제 대기는 PENDING, 취소된 예매는 CANCEL로 반환하세요.
             - 질문에 공연명이 명시된 경우에만 eventTitle을 반환하세요.
-            - 질문에 없는 조건을 추측하지 마세요.
-            - 후보 번호와 예매 식별자는 반환하지 마세요.
+
+            예시:
+            - "내 예매 하나를 취소하면 얼마예요?"는 선택 조건이 없습니다.
+            - "겨울왕국 공연을 취소하면 얼마예요?"는 eventTitle만 "겨울왕국"입니다.
             """;
 
     private final ChatClient.Builder chatClientBuilder;
@@ -100,6 +94,28 @@ public class ReservationSelectionService {
         );
     }
 
+    static boolean hasSelectionCondition(
+            String question,
+            List<MyReservationSummary> reservations
+    ) {
+        String normalizedQuestion = normalize(question);
+        boolean hasMatchingTitle = reservations.stream()
+                .map(MyReservationSummary::eventTitle)
+                .anyMatch(title -> matchesTitleFragment(normalizedQuestion, title));
+        if (hasMatchingTitle) {
+            return true;
+        }
+
+        boolean hasSelectionTerm = SELECTION_TERMS.stream()
+                .anyMatch(question::contains);
+        boolean hasDayOfWeek = DAY_OF_WEEK_TERMS.stream()
+                .anyMatch(question::contains);
+
+        return hasSelectionTerm
+                || hasDayOfWeek
+                || DATE_PATTERN.matcher(question).find();
+    }
+
     static List<MyReservationSummary> apply(
             ReservationSelectionCriteria criteria,
             List<MyReservationSummary> reservations,
@@ -123,29 +139,6 @@ public class ReservationSelectionService {
         }
 
         return selected;
-    }
-
-    static boolean hasSelectionCondition(
-            String question,
-            List<MyReservationSummary> reservations
-    ) {
-        String normalizedQuestion = normalize(question);
-        boolean hasMatchingTitle = reservations.stream()
-                .map(MyReservationSummary::eventTitle)
-                .map(ReservationSelectionService::normalize)
-                .anyMatch(normalizedQuestion::contains);
-        if (hasMatchingTitle) {
-            return true;
-        }
-
-        boolean hasSelectionTerm = SELECTION_TERMS.stream()
-                .anyMatch(question::contains);
-        boolean hasDayOfWeek = DAY_OF_WEEK_TERMS.stream()
-                .anyMatch(question::contains);
-
-        return hasSelectionTerm
-                || hasDayOfWeek
-                || DATE_PATTERN.matcher(question).find();
     }
 
     static Optional<ReservationSelectionCriteria> knownCriteria(
@@ -258,11 +251,30 @@ public class ReservationSelectionService {
     ) {
         String normalizedQuestion = normalize(question);
 
-        return reservations.stream()
+        List<String> matchedTitles = reservations.stream()
                 .map(MyReservationSummary::eventTitle)
-                .filter(title -> normalizedQuestion.contains(normalize(title)))
-                .findFirst()
-                .orElse(null);
+                .distinct()
+                .filter(title -> matchesTitleFragment(normalizedQuestion, title))
+                .toList();
+
+        return matchedTitles.size() == 1
+                ? matchedTitles.getFirst()
+                : null;
+    }
+
+    private static boolean matchesTitleFragment(
+            String normalizedQuestion,
+            String title
+    ) {
+        if (normalizedQuestion.contains(normalize(title))) {
+            return true;
+        }
+
+        return Pattern.compile("[^0-9a-zA-Z가-힣]+")
+                .splitAsStream(title)
+                .map(ReservationSelectionService::normalize)
+                .filter(part -> part.length() >= 2)
+                .anyMatch(normalizedQuestion::contains);
     }
 
     private static boolean containsAny(String question, List<String> terms) {
