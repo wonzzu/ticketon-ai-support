@@ -8,10 +8,10 @@
   },
   {
     "id": "ROUTE-002",
-    "category": "POLICY_BOUNDARY",
+    "category": "REFUND_BOUNDARY",
     "authenticated": false,
     "question": "공연이 딱 3일 남았고 예매한 지 23시간 됐는데 무료 취소돼요?",
-    "expectedRoute": "POLICY"
+    "expectedRoute": "REFUND_CALCULATION"
   },
   {
     "id": "ROUTE-003",

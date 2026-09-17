@@ -52,6 +52,14 @@ application-*.local.yaml
 *.log
 logs/
 
+# Node.js dependencies
+node_modules/
+
+# Local browser and document rendering artifacts
+/.tmp-edge-render/
+/tmp/
+docs/images/*-paste.drawio
+
 # OS-generated files
 .DS_Store
 Thumbs.db

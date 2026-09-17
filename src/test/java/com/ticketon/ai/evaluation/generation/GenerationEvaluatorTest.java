@@ -30,12 +30,20 @@ class GenerationEvaluatorTest {
         GeneratedAnswerCase answered = generatedAnswer(
                 answerable,
                 "정책에 근거한 답변입니다.",
-                List.of(new PolicyContext.Source("POLICY-01", "정책"))
+                List.of(new PolicyContext.Source(
+                        "POLICY-01",
+                        "정책",
+                        "정책 내용"
+                ))
         );
         GeneratedAnswerCase abstained = generatedAnswer(
                 unanswerable,
                 "제공된 정책만으로 확인할 수 없습니다.",
-                List.of(new PolicyContext.Source("POLICY-99", "유사 정책"))
+                List.of(new PolicyContext.Source(
+                        "POLICY-99",
+                        "유사 정책",
+                        "유사 정책 내용"
+                ))
         );
 
         when(batchService.generate(List.of(answerable, unanswerable)))

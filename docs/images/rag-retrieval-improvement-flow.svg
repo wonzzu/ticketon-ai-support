@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="480" viewBox="0 0 1800 480">
+  <defs>
+    <linearGradient id="background" x1="0" x2="1">
+      <stop offset="0" stop-color="#F8FBFF"/>
+      <stop offset="1" stop-color="#F3F7FC"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#17365D" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#316FCC"/>
+    </marker>
+  </defs>
+
+  <rect width="1800" height="480" rx="28" fill="url(#background)"/>
+
+  <text x="60" y="58" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="27" font-weight="700" fill="#16365C">평가 현실화</text>
+
+  <rect x="60" y="82" width="330" height="130" rx="18" fill="#FFF8EC" stroke="#F2A93B" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="108" cy="130" r="25" fill="#F2A93B"/>
+  <path d="M96 131l8 8 17-20" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="150" y="122" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#27364A">정제형 질문</text>
+  <text x="150" y="160" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="32" font-weight="800" fill="#D68100">Recall@3 98%</text>
+  <text x="150" y="190" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="16" fill="#6D7785">정책과 질문 표현이 지나치게 유사</text>
+
+  <line x1="414" y1="147" x2="505" y2="147" stroke="#316FCC" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="459" y="126" text-anchor="middle" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#316FCC">현실형 질문 추가</text>
+
+  <rect x="525" y="82" width="330" height="130" rx="18" fill="#FFF2F2" stroke="#DC6868" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="573" cy="130" r="25" fill="#DC6868"/>
+  <path d="M573 114v21 M573 146v2" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+  <text x="615" y="122" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#27364A">현실형 질문</text>
+  <text x="615" y="160" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="32" font-weight="800" fill="#C44747">Recall@3 83%</text>
+  <text x="615" y="190" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="16" fill="#6D7785">구어체·생략·상황형에서 약점 발견</text>
+
+  <line x1="879" y1="147" x2="970" y2="147" stroke="#316FCC" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="924" y="126" text-anchor="middle" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#316FCC">평가 환경 재구성</text>
+
+  <rect x="990" y="82" width="750" height="130" rx="18" fill="#EAF3FF" stroke="#77A8E8" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="1040" cy="130" r="25" fill="#316FCC"/>
+  <rect x="1026" y="120" width="28" height="23" rx="2" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <path d="M1031 114h18v6" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="1082" y="122" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#17365D">Corpus·평가셋 V2 재설계</text>
+  <text x="1082" y="160" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="30" font-weight="800" fill="#316FCC">24 → 166 Chunks</text>
+  <text x="1082" y="190" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="16" fill="#516A86">정책·FAQ·고객지원 가이드로 검색 경쟁 환경 확장</text>
+
+  <line x1="60" y1="247" x2="1740" y2="247" stroke="#D5E1F0" stroke-width="2"/>
+  <text x="60" y="292" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="27" font-weight="700" fill="#16365C">동일한 V2 조건에서 검색 개선</text>
+
+  <rect x="60" y="318" width="400" height="105" rx="18" fill="#FFFFFF" stroke="#8FA9C5" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="110" cy="370" r="25" fill="#7B91AA"/>
+  <path d="M98 381h24 M102 374h16 M106 367h8 M110 358v-6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <text x="152" y="357" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#27364A">확장 Baseline</text>
+  <text x="152" y="395" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="30" font-weight="800" fill="#526A84">139/154 · 90.3%</text>
+
+  <line x1="484" y1="370" x2="585" y2="370" stroke="#316FCC" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="535" y="347" text-anchor="middle" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#316FCC">중복 점유 제거</text>
+
+  <rect x="605" y="318" width="400" height="105" rx="18" fill="#F6FAFF" stroke="#6A9DE0" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="655" cy="370" r="25" fill="#4F87D3"/>
+  <rect x="642" y="357" width="19" height="19" rx="2" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <path d="M649 350h19v19" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="697" y="357" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#27364A">PolicyId Dedup</text>
+  <text x="697" y="395" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="30" font-weight="800" fill="#316FCC">약 93.5%</text>
+
+  <line x1="1029" y1="370" x2="1130" y2="370" stroke="#316FCC" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="1080" y="347" text-anchor="middle" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#316FCC">표현 차이 완화</text>
+
+  <rect x="1150" y="318" width="590" height="105" rx="18" fill="#EEF8F2" stroke="#32A064" stroke-width="3" filter="url(#shadow)"/>
+  <circle cx="1200" cy="370" r="25" fill="#32A064"/>
+  <path d="M1188 371l8 8 17-20" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1242" y="357" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#27364A">의미 보존형 Query Rewrite</text>
+  <text x="1242" y="395" font-family="Arial, 'Malgun Gothic', sans-serif" font-size="31" font-weight="800" fill="#218552">148/154 · 96.1%</text>
+</svg>

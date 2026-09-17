@@ -1220,6 +1220,16 @@ domain: FAQ
 
 대기열을 통과한 입장 권한은 최대 10분 동안 유지됩니다. 잠시 자리를 비울 수는 있지만 10분 안에 예매를 시작하지 않으면 권한이 만료되어 다시 대기해야 할 수 있습니다.
 
+## FAQ-QUEUE-05 대기열 통과 후 늦게 좌석을 잡으면 선점 시간이 줄어드는지
+
+sourcePolicyId: QUEUE-04
+documentType: FAQ
+audience: CUSTOMER
+implementationStatus: IMPLEMENTED
+domain: FAQ
+
+대기열을 통과한 입장 권한은 최대 10분 동안 유지됩니다. 이 시간은 예매 요청 성공 후 시작되는 좌석 임시 선점 7분과 별도로 계산됩니다. 대기열 통과 후 사용한 시간이 좌석 선점 시간에서 차감되지는 않습니다. 입장 권한이 유지되는 동안 예매 요청에 성공하면 그 시점부터 좌석 선점 시간이 새로 시작됩니다.
+
 ## FAQ-QUEUE-04 새로고침하면 순번이 빨라지는지
 
 sourcePolicyId: QUEUE-05
@@ -1429,7 +1439,5 @@ implementationStatus: IMPLEMENTED
 domain: FAQ
 
 취소된 결제는 취소 정보가 정산 처리에 전달되고 해당 공연 정산이 다시 계산된 뒤 제외됩니다. 처리 중에는 이전 금액이 잠시 보일 수 있으므로 재집계 후 정산 상세를 확인해야 합니다.
-
-
 
 
