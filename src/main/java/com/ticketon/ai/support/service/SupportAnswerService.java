@@ -2,6 +2,7 @@ package com.ticketon.ai.support.service;
 
 import com.ticketon.ai.auth.TicketOnAccessToken;
 import com.ticketon.ai.observation.AiStageObservation;
+import com.ticketon.ai.policy.answer.dto.PolicyAnswerResponse;
 import com.ticketon.ai.policy.answer.service.PolicyAnswerService;
 import com.ticketon.ai.refund.RefundEstimate;
 import com.ticketon.ai.refund.tool.RefundEstimateTool;
@@ -10,6 +11,7 @@ import com.ticketon.ai.reservation.dto.ReservationSelectionResult;
 import com.ticketon.ai.reservation.service.ReservationSelectionService;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.domain.SupportRoute;
+import com.ticketon.ai.support.dto.SupportAnswerResponse;
 import com.ticketon.ai.tool.result.ToolFailureCode;
 import com.ticketon.ai.tool.result.ToolResult;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +36,27 @@ public class SupportAnswerService {
             "현재는 조회와 예상 결과 안내만 가능하며 실제 취소나 변경은 수행할 수 없습니다.";
     private static final String OUT_OF_SCOPE_MESSAGE =
             "TicketOn 이용, 예매, 결제, 취소 및 환불 관련 질문을 도와드릴 수 있습니다.";
+    private static final String POLICY_ANSWER_NOTICE =
+            "AI 안내는 관련 정책을 쉽게 설명한 내용입니다. "
+                    + "정확한 정책은 위 근거를 확인해 주세요.";
     private static final String EMPTY_RESERVATIONS_MESSAGE =
             "현재 확인할 수 있는 예매가 없습니다.";
     private static final String NO_MATCHING_RESERVATIONS_MESSAGE =
             "질문의 조건에 맞는 예매가 없습니다.";
     private static final String NO_CANCELLABLE_RESERVATIONS_MESSAGE =
             "현재 취소 가능한 예매가 없습니다.";
+    private static final String GENERAL_REFUND_POLICY_MESSAGE = """
+            일반 취소 정책은 다음과 같습니다.
+            - 공연 당일 또는 공연 시작 이후에는 취소할 수 없습니다.
+            - 공연일까지 14일 이상 남으면 취소 수수료가 없습니다.
+            - 7일 이상 13일 이하 남으면 결제금액의 10%가 부과됩니다.
+            - 3일 이상 6일 이하 남으면 결제금액의 20%가 부과됩니다.
+            - 1일 이상 2일 이하 남으면 결제금액의 30%가 부과됩니다.
+            - 예매 후 24시간 이내이고 공연일까지 3일 이상 남으면 취소 수수료 예외가 적용됩니다.
+            """;
+    private static final String REFUND_LOGIN_GUIDANCE =
+            "로그인한 상태에서 실제 예매 기록이 확인되면 해당 기록을 기준으로 "
+                    + "취소 가능 여부와 예상 환불액을 정확하게 안내받을 수 있습니다.";
     private static final String CONFIRMED_STATUS = "CONFIRMED";
     private static final String PENDING_STATUS = "PENDING";
     private static final String PENDING_REFUND_MESSAGE =
@@ -84,7 +101,7 @@ public class SupportAnswerService {
     private final AiStageObservation aiStageObservation;
     private final Clock clock;
 
-    public String answer(
+    public SupportAnswerResponse answer(
             String question,
             Optional<TicketOnAccessToken> accessToken
     ) {
@@ -94,20 +111,42 @@ public class SupportAnswerService {
         );
     }
 
-    private String answerByRoute(
+    private SupportAnswerResponse answerByRoute(
             String question,
             Optional<TicketOnAccessToken> accessToken
     ) {
         SupportRoute route = supportRouteService.route(question);
 
         return switch (route) {
-            case POLICY -> policyAnswerService.answer(question).answer();
-            case PERSONAL_DATA -> answerPersonalData(question, accessToken);
-            case REFUND_CALCULATION -> answerRefund(question, accessToken);
-            case UNSUPPORTED_WRITE -> UNSUPPORTED_WRITE_MESSAGE;
-            case GENERAL -> generateGeneralAnswer(question);
-            case OUT_OF_SCOPE -> OUT_OF_SCOPE_MESSAGE;
+            case POLICY -> answerPolicy(question);
+            case PERSONAL_DATA -> SupportAnswerResponse.from(
+                    answerPersonalData(question, accessToken)
+            );
+            case REFUND_CALCULATION -> SupportAnswerResponse.from(
+                    answerRefund(question, accessToken)
+            );
+            case UNSUPPORTED_WRITE -> SupportAnswerResponse.from(
+                    UNSUPPORTED_WRITE_MESSAGE
+            );
+            case GENERAL -> SupportAnswerResponse.from(
+                    generateGeneralAnswer(question)
+            );
+            case OUT_OF_SCOPE -> SupportAnswerResponse.from(
+                    OUT_OF_SCOPE_MESSAGE
+            );
         };
+    }
+
+    private SupportAnswerResponse answerPolicy(String question) {
+        PolicyAnswerResponse policyAnswer = policyAnswerService.answer(question);
+        if (policyAnswer.abstained()) {
+            return SupportAnswerResponse.from(policyAnswer.answer());
+        }
+
+        return SupportAnswerResponse.from(
+                policyAnswer,
+                POLICY_ANSWER_NOTICE
+        );
     }
 
     private String answerPersonalData(
@@ -148,7 +187,7 @@ public class SupportAnswerService {
             Optional<TicketOnAccessToken> accessToken
     ) {
         if (accessToken.isEmpty()) {
-            return LOGIN_REQUIRED_MESSAGE;
+            return generalRefundPolicyAnswer();
         }
 
         ToolContext context = toolContext(accessToken.get());
@@ -162,7 +201,7 @@ public class SupportAnswerService {
         List<MyReservationSummary> reservations =
                 ((ToolResult.Success<List<MyReservationSummary>>) reservationResult).data();
         if (reservations.isEmpty()) {
-            return EMPTY_RESERVATIONS_MESSAGE;
+            return generalRefundPolicyAnswer();
         }
         if (asksForStatus(question, PENDING_QUESTION_TERMS)
                 && hasReservationStatus(reservations, PENDING_STATUS)) {
@@ -183,7 +222,7 @@ public class SupportAnswerService {
                         .isAfter(today))
                 .toList();
         if (cancellableReservations.isEmpty()) {
-            return NO_CANCELLABLE_RESERVATIONS_MESSAGE;
+            return noCancellableReservationMessage(reservations);
         }
 
         ReservationSelectionResult selection =
@@ -204,6 +243,17 @@ public class SupportAnswerService {
         RefundEstimate estimate =
                 ((ToolResult.Success<RefundEstimate>) refundResult).data();
         return generateDataAnswer(question, refundContext(estimate));
+    }
+
+    private String generalRefundPolicyAnswer() {
+        return """
+                %s
+
+                %s
+                """.formatted(
+                GENERAL_REFUND_POLICY_MESSAGE,
+                REFUND_LOGIN_GUIDANCE
+        ).strip();
     }
 
     private ToolContext toolContext(TicketOnAccessToken accessToken) {
@@ -269,18 +319,17 @@ public class SupportAnswerService {
         return message.toString();
     }
 
-    private String noRefundableReservationMessage(
+    private String noCancellableReservationMessage(
             List<MyReservationSummary> reservations
     ) {
-        boolean hasPendingReservation = reservations.stream()
-                .anyMatch(reservation -> PENDING_STATUS.equals(
-                        reservation.reservationStatus()
-                ));
-        if (hasPendingReservation) {
+        if (hasReservationStatus(reservations, PENDING_STATUS)) {
             return PENDING_REFUND_MESSAGE;
         }
+        if (hasReservationStatus(reservations, "CANCEL")) {
+            return CANCELED_REFUND_MESSAGE;
+        }
 
-        return CANCELED_REFUND_MESSAGE;
+        return NO_CANCELLABLE_RESERVATIONS_MESSAGE;
     }
 
     private boolean asksForStatus(String question, List<String> statusTerms) {

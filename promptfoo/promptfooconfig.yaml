@@ -1,0 +1,36 @@
+description: TicketOn AI Support 통합 회귀 평가
+
+sharing: false
+
+prompts:
+  - "{{question}}"
+
+providers:
+  - id: http
+    label: ticketon-ai-support
+    config:
+      url: http://localhost:8081/api/support/answers
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        question: "{{prompt}}"
+      transformResponse: JSON.stringify(json)
+      maxRetries: 0
+
+defaultTest:
+  assert:
+    - type: is-json
+
+    - type: javascript
+      value: |
+        const response = JSON.parse(output);
+        return typeof response.answer === "string"
+          && response.answer.length > 0
+          && Array.isArray(response.sources)
+          && typeof response.notice === "string";
+
+    - type: latency
+      threshold: 30000
+
+tests: file://tests.yaml

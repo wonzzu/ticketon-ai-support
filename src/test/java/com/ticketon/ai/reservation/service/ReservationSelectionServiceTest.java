@@ -104,6 +104,33 @@ class ReservationSelectionServiceTest {
         assertThat(criteria.reservationStatus()).isNull();
     }
 
+    @Test
+    void 유일한_부분_공연명은_전체_공연명_조건으로_변환한다() {
+        List<MyReservationSummary> reservations = List.of(
+                reservation(
+                        11L,
+                        "TETRAPOD: Intermingle",
+                        "2026-09-20T19:00",
+                        "2026-08-01T10:00"
+                ),
+                reservation(
+                        22L,
+                        "인어공주",
+                        "2026-09-21T19:00",
+                        "2026-08-02T10:00"
+                )
+        );
+
+        ReservationSelectionCriteria criteria =
+                ReservationSelectionService.knownCriteria(
+                        "TETRAPOD 공연 환불액 알려줘.",
+                        reservations
+                ).orElseThrow();
+
+        assertThat(criteria.eventTitle())
+                .isEqualTo("TETRAPOD: Intermingle");
+    }
+
     private MyReservationSummary reservation(
             Long reservationId,
             String eventTitle,

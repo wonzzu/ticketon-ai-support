@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "eval:smoke": "promptfoo eval -c promptfoo/promptfooconfig.yaml --filter-metadata suite=smoke --no-cache --no-share --max-concurrency 1",
+    "eval:full": "promptfoo eval -c promptfoo/promptfooconfig.yaml --no-cache --no-share --max-concurrency 1"
+  },
+  "devDependencies": {
+    "promptfoo": "0.122.2"
+  }
+}

@@ -12,6 +12,7 @@ import com.ticketon.ai.reservation.dto.ReservationSelectionResult;
 import com.ticketon.ai.reservation.service.ReservationSelectionService;
 import com.ticketon.ai.reservation.tool.MyReservationTool;
 import com.ticketon.ai.support.domain.SupportRoute;
+import com.ticketon.ai.support.dto.SupportAnswerResponse;
 import com.ticketon.ai.tool.result.ToolFailureCode;
 import com.ticketon.ai.tool.result.ToolResult;
 import io.micrometer.observation.ObservationRegistry;
@@ -19,7 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +34,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SupportAnswerServiceTest {
+
+    private static final Clock CLOCK = Clock.fixed(
+            Instant.parse("2026-09-07T03:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
 
     private final SupportRouteService routeService =
             mock(SupportRouteService.class);
@@ -56,24 +65,39 @@ class SupportAnswerServiceTest {
                 refundEstimateTool,
                 reservationSelectionService,
                 builder,
-                observation
+                observation,
+                CLOCK
         );
     }
 
     @Test
     void 정책_경로는_기존_RAG를_호출한다() {
         String question = "좌석은 몇 분 유지돼요?";
-        PolicyAnswerResponse response = new PolicyAnswerResponse(
+        PolicyAnswerResponse policyAnswer = new PolicyAnswerResponse(
                 "좌석은 7분 동안 유지됩니다.",
-                List.of(),
+                List.of(new PolicyAnswerResponse.Source(
+                        "SEAT-02",
+                        "좌석 임시 선점",
+                        "좌석은 예매 요청 성공 시점부터 7분간 유지됩니다."
+                )),
                 false
         );
         when(routeService.route(question)).thenReturn(SupportRoute.POLICY);
-        when(policyAnswerService.answer(question)).thenReturn(response);
+        when(policyAnswerService.answer(question)).thenReturn(policyAnswer);
 
-        String answer = service.answer(question, Optional.empty());
+        SupportAnswerResponse response = service.answer(
+                question,
+                Optional.empty()
+        );
 
-        assertThat(answer).isEqualTo(response.answer());
+        assertThat(response.answer()).isEqualTo(policyAnswer.answer());
+        assertThat(response.sources()).singleElement()
+                .satisfies(source -> {
+                    assertThat(source.policyId()).isEqualTo("SEAT-02");
+                    assertThat(source.title()).isEqualTo("좌석 임시 선점");
+                    assertThat(source.content()).contains("7분");
+                });
+        assertThat(response.notice()).contains("관련 정책");
         verify(policyAnswerService).answer(question);
     }
 
@@ -82,10 +106,53 @@ class SupportAnswerServiceTest {
         String question = "내 예매 보여줘.";
         when(routeService.route(question)).thenReturn(SupportRoute.PERSONAL_DATA);
 
-        String answer = service.answer(question, Optional.empty());
+        SupportAnswerResponse response = service.answer(question, Optional.empty());
 
-        assertThat(answer).contains("로그인");
+        assertThat(response.answer()).contains("로그인");
         verify(myReservationTool, never()).getMyReservations(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void 비로그인_환불_계산_질문은_일반_정책과_로그인_안내를_반환한다() {
+        String question = "공연이 3일 남았고 예매한 지 23시간이면 무료 취소돼요?";
+        when(routeService.route(question))
+                .thenReturn(SupportRoute.REFUND_CALCULATION);
+
+        SupportAnswerResponse response = service.answer(question, Optional.empty());
+
+        assertThat(response.answer())
+                .contains("14일 이상", "7일 이상 13일 이하", "3일 이상 6일 이하")
+                .contains("예매 후 24시간 이내", "공연일까지 3일 이상")
+                .contains("실제 예매 기록")
+                .contains("정확하게 안내");
+        verify(myReservationTool, never()).getMyReservations(
+                org.mockito.ArgumentMatchers.any()
+        );
+        verify(policyAnswerService, never()).answer(
+                org.mockito.ArgumentMatchers.anyString()
+        );
+    }
+
+    @Test
+    void 로그인했지만_예매가_없으면_일반_환불_정책을_안내한다() {
+        String question = "지금 취소하면 수수료 없이 환불돼요?";
+        when(routeService.route(question))
+                .thenReturn(SupportRoute.REFUND_CALCULATION);
+        when(myReservationTool.getMyReservations(
+                org.mockito.ArgumentMatchers.any()
+        )).thenReturn(ToolResult.success(List.of()));
+
+        SupportAnswerResponse response = service.answer(
+                question,
+                Optional.of(new TicketOnAccessToken("access-token"))
+        );
+
+        assertThat(response.answer())
+                .contains("14일 이상", "예매 후 24시간 이내")
+                .contains("실제 예매 기록");
+        verify(policyAnswerService, never()).answer(
+                org.mockito.ArgumentMatchers.anyString()
+        );
     }
 
     @Test
@@ -94,12 +161,12 @@ class SupportAnswerServiceTest {
         when(routeService.route(question))
                 .thenReturn(SupportRoute.UNSUPPORTED_WRITE);
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("token"))
         );
 
-        assertThat(answer).contains("수행할 수 없습니다");
+        assertThat(response.answer()).contains("수행할 수 없습니다");
         verify(myReservationTool, never()).getMyReservations(org.mockito.ArgumentMatchers.any());
         verify(refundEstimateTool, never()).estimateRefund(
                 org.mockito.ArgumentMatchers.anyLong(),
@@ -129,9 +196,13 @@ class SupportAnswerServiceTest {
                 org.mockito.ArgumentMatchers.any()
         )).thenReturn(ToolResult.failure(ToolFailureCode.NOT_FOUND));
 
-        String answer = service.answer(question, Optional.of(accessToken));
+        SupportAnswerResponse response = service.answer(
+                question,
+                Optional.of(accessToken)
+        );
 
-        assertThat(answer).isEqualTo(ToolFailureCode.NOT_FOUND.getSafeMessage());
+        assertThat(response.answer())
+                .isEqualTo(ToolFailureCode.NOT_FOUND.getSafeMessage());
         verify(refundEstimateTool).estimateRefund(
                 org.mockito.ArgumentMatchers.eq(22L),
                 org.mockito.ArgumentMatchers.any()
@@ -152,12 +223,12 @@ class SupportAnswerServiceTest {
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(List.of(pending)));
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        assertThat(answer).contains("결제 대기");
+        assertThat(response.answer()).contains("결제 대기");
         verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
@@ -179,12 +250,12 @@ class SupportAnswerServiceTest {
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(List.of(pending, confirmed)));
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        assertThat(answer).contains("결제 대기");
+        assertThat(response.answer()).contains("결제 대기");
         verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
@@ -206,12 +277,12 @@ class SupportAnswerServiceTest {
         when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(ToolResult.success(List.of(canceled, confirmed)));
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        assertThat(answer).contains("이미 취소");
+        assertThat(response.answer()).contains("이미 취소");
         verify(reservationSelectionService, never()).find(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
@@ -223,7 +294,7 @@ class SupportAnswerServiceTest {
     }
 
     @Test
-    void 환불액_계산에서는_결제_완료_예매만_선택_후보로_사용한다() {
+    void 취소_가능한_예매가_한_건이어도_대상이_불명확하면_다시_묻는다() {
         String question = "내 예매 환불액 알려줘.";
         MyReservationSummary pending = reservation(11L, "결제 대기 공연", "PENDING");
         MyReservationSummary confirmed = reservation(22L, "결제 완료 공연", "CONFIRMED");
@@ -238,19 +309,51 @@ class SupportAnswerServiceTest {
                         List.of(confirmed),
                         false
                 ));
-        when(refundEstimateTool.estimateRefund(
-                org.mockito.ArgumentMatchers.eq(22L),
-                org.mockito.ArgumentMatchers.any()
-        )).thenReturn(ToolResult.failure(ToolFailureCode.NOT_FOUND));
 
-        service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
+        assertThat(response.answer())
+                .contains("결제 완료 공연")
+                .contains("다시 알려주세요");
         verify(reservationSelectionService).find(question, List.of(confirmed));
-        verify(refundEstimateTool).estimateRefund(
-                org.mockito.ArgumentMatchers.eq(22L),
+        verify(refundEstimateTool, never()).estimateRefund(
+                org.mockito.ArgumentMatchers.anyLong(),
+                org.mockito.ArgumentMatchers.any()
+        );
+    }
+
+    @Test
+    void 공연이_지난_결제_완료_예매는_환불_후보에서_제외한다() {
+        String question = "내 예매 환불액 알려줘.";
+        MyReservationSummary pastReservation = new MyReservationSummary(
+                11L,
+                "지난 공연",
+                LocalDateTime.of(2026, 9, 6, 19, 0),
+                "CONFIRMED",
+                LocalDateTime.of(2026, 8, 20, 12, 0)
+        );
+
+        when(routeService.route(question))
+                .thenReturn(SupportRoute.REFUND_CALCULATION);
+        when(myReservationTool.getMyReservations(org.mockito.ArgumentMatchers.any()))
+                .thenReturn(ToolResult.success(List.of(pastReservation)));
+
+        SupportAnswerResponse response = service.answer(
+                question,
+                Optional.of(new TicketOnAccessToken("access-token"))
+        );
+
+        assertThat(response.answer())
+                .isEqualTo("현재 취소 가능한 예매가 없습니다.");
+        verify(reservationSelectionService, never()).find(
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyList()
+        );
+        verify(refundEstimateTool, never()).estimateRefund(
+                org.mockito.ArgumentMatchers.anyLong(),
                 org.mockito.ArgumentMatchers.any()
         );
     }
@@ -272,12 +375,12 @@ class SupportAnswerServiceTest {
                         false
                 ));
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        assertThat(answer)
+        assertThat(response.answer())
                 .contains("첫 번째 공연", "두 번째 공연")
                 .contains("2026-09-20T19:00")
                 .contains("CONFIRMED")
@@ -301,12 +404,14 @@ class SupportAnswerServiceTest {
         when(reservationSelectionService.find(question, reservations))
                 .thenReturn(new ReservationSelectionResult(List.of(), true));
 
-        String answer = service.answer(
+        SupportAnswerResponse response = service.answer(
                 question,
                 Optional.of(new TicketOnAccessToken("access-token"))
         );
 
-        assertThat(answer).contains("조건에 맞는 예매").contains("없습니다");
+        assertThat(response.answer())
+                .contains("조건에 맞는 예매")
+                .contains("없습니다");
     }
 
     private MyReservationSummary reservation(Long reservationId, String eventTitle) {

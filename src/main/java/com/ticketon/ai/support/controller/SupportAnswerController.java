@@ -32,11 +32,9 @@ public class SupportAnswerController {
     ) {
         Optional<TicketOnAccessToken> accessToken =
                 TicketOnAccessToken.fromOptional(authorizationHeader);
-        String answer = supportAnswerService.answer(
+        return supportAnswerService.answer(
                 request.question(),
                 accessToken
         );
-
-        return SupportAnswerResponse.from(answer);
     }
 }

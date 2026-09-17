@@ -18,12 +18,17 @@ public record PolicyContext(
         return new PolicyContext(content, sources);
     }
 
-    public record Source(String policyId, String title) {
+    public record Source(
+            String policyId,
+            String title,
+            String content
+    ) {
 
         private static Source from(PolicySearchResponse policy) {
             return new Source(
                     policy.policyId(),
-                    policy.title()
+                    policy.title(),
+                    policy.content()
             );
         }
     }

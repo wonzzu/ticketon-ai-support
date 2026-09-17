@@ -12,11 +12,11 @@ public record PolicyAnswerResponse(
 ) {
 
     public static PolicyAnswerResponse from(PolicyAnswerGeneration generation) {
-
-        List<Source> sources = generation.context().sources().stream()
-                .filter(source -> generation.usedPolicyIds().contains(source.policyId()))
-                .map(Source::from)
-                .toList();
+        List<Source> sources = generation.abstained()
+                ? List.of()
+                : generation.context().sources().stream()
+                        .map(Source::from)
+                        .toList();
 
         return new PolicyAnswerResponse(
                 generation.answer(),
@@ -25,12 +25,17 @@ public record PolicyAnswerResponse(
         );
     }
 
-    public record Source(String policyId, String title) {
+    public record Source(
+            String policyId,
+            String title,
+            String content
+    ) {
 
         private static Source from(PolicyContext.Source source) {
             return new Source(
                     source.policyId(),
-                    source.title()
+                    source.title(),
+                    source.content()
             );
         }
     }

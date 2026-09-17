@@ -70,7 +70,11 @@ class PolicyAnswerOutputValidatorTest {
 
     private PolicyContext context(String... policyIds) {
         List<PolicyContext.Source> sources = List.of(policyIds).stream()
-                .map(policyId -> new PolicyContext.Source(policyId, policyId))
+                .map(policyId -> new PolicyContext.Source(
+                        policyId,
+                        policyId,
+                        "정책 내용"
+                ))
                 .toList();
 
         return new PolicyContext("context", sources);

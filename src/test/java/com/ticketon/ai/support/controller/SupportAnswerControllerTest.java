@@ -24,7 +24,7 @@ class SupportAnswerControllerTest {
     void 일반_정책_질문은_인증정보_없이_전달한다() {
         PolicyAnswerRequest request = new PolicyAnswerRequest("취소 정책 알려줘.");
         when(supportAnswerService.answer(request.question(), Optional.empty()))
-                .thenReturn("정책 답변");
+                .thenReturn(SupportAnswerResponse.from("정책 답변"));
 
         SupportAnswerResponse response = controller.answer(request, null);
 
@@ -39,7 +39,7 @@ class SupportAnswerControllerTest {
         when(supportAnswerService.answer(
                 request.question(),
                 Optional.of(accessToken)
-        )).thenReturn("개인 예매 답변");
+        )).thenReturn(SupportAnswerResponse.from("개인 예매 답변"));
 
         SupportAnswerResponse response = controller.answer(
                 request,
